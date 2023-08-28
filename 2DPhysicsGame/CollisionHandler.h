@@ -1,3 +1,6 @@
+//Probably obsolete
+
+
 #pragma once
 #include "Circle.h" // Include the Circle class header
 class CollisionHandler {

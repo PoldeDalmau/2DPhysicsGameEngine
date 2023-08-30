@@ -11,6 +11,15 @@ private:
 	sf::Color color;
 
 public:
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="radius"></param>
+	/// <param name="xPosition"></param>
+	/// <param name="yPosition"></param>
+	/// <param name="xVelocity"></param>
+	/// <param name="yVelocity"></param>
+	/// <param name="color"></param>
 	Circle(float radius, float xPosition, float yPosition, float xVelocity, float yVelocity, sf::Color color = sf::Color::White)
 		: radius(radius), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity), yVelocity(yVelocity), color(color) {
 	}

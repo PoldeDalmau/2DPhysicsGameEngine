@@ -2,6 +2,7 @@
 #include "Circle.h"
 #include <vector>
 #include <cassert>
+#include <math.h>
 
 // Use (void) to silence unused warnings.
 #define assertm(exp, msg) assert(((void)msg, exp))
@@ -41,8 +42,10 @@ public:
             AddCircle(Circle(radius, x, y, vx, vy));
         }
         // make one circle to hit all the circles;
-        AddCircle(Circle(radius, 900, 450, 3, 1000, sf::Color::Red));
+        AddCircle(Circle(radius, ScreenHeight - radius, screenWidth / 2.0f + radius, 3, -2000, sf::Color::Red));
+        velocityDistribution = vector<float>(circles.size());
     }
+
     void UpdateAll(float deltaTime) {
         for (Circle& circle : circles)
             circle.updatePosition(deltaTime);
@@ -64,20 +67,20 @@ public:
     }
 
     vector<std::string> getStats() {
-        vector < std:: string > stats;
-        velocityDistribution = vector<float>(circles.size());
-        int 
-            temperature  = 0,
-            circle_index = 0;
-        stats.push_back(std::to_string(circles.size()));
+        vector < std:: string > stats(3);
+        float particleEnergy,
+            internalEnergy = 0;
+        int circle_index = 0;
+        stats[0] = (std::to_string(circles.size()));
 
         for (Circle& circ : circles) {
-            velocityDistribution[circle_index] = circ.getxVelocity() * circ.getxVelocity() + circ.getyVelocity() * circ.getyVelocity();
-            temperature += velocityDistribution[circle_index];
+            particleEnergy = circ.getxVelocity() * circ.getxVelocity() + circ.getyVelocity() * circ.getyVelocity();
+            internalEnergy += particleEnergy;
+            velocityDistribution[circle_index] = sqrt(particleEnergy);
             circle_index++;
         }
-        stats.push_back(std::to_string(temperature));
-        stats.push_back(std::to_string(circles[circles.size()-1].getxVelocity() * circles[circles.size() - 1].getxVelocity() + circles[circles.size() - 1].getyVelocity() * circles[circles.size() - 1].getyVelocity()));
+        stats[1] = std::to_string((internalEnergy));
+        stats[2] = std::to_string(velocityDistribution.back());
         return stats;
     }
 
@@ -95,7 +98,7 @@ public:
         for (int i = 0; i < numbins; i++) {
             sf::RectangleShape rectangle(sf::Vector2f(rectangleWidth, binoccupancy[i] * 2));
             rectangle.setFillColor(sf::Color::White);
-            rectangle.setPosition(sf::Vector2f(1010 + i * rectangleWidth, 150));
+            rectangle.setPosition(sf::Vector2f(1010 + i * rectangleWidth, screenHeight - binoccupancy[i] * 2));
             window.draw(rectangle);
         }
 

@@ -42,7 +42,7 @@ public:
             AddCircle(Circle(radius, x, y, vx, vy));
         }
         // make one circle to hit all the circles;
-        AddCircle(Circle(radius, ScreenHeight - radius, screenWidth / 2.0f + radius, 3, -2000, sf::Color::Red));
+        AddCircle(Circle(radius, screenWidth / 2.0f + radius, ScreenHeight - radius, 2000, -100, sf::Color::Red));
         velocityDistribution = vector<float>(circles.size());
     }
 
@@ -50,9 +50,9 @@ public:
         for (Circle& circle : circles)
             circle.updatePosition(deltaTime);
     }
-    void CheckCollisionsAndResolve() {
+    void CheckCollisionsAndResolve(float wallxPosition, float wallxVelocity) {
         for (int i = 0; i < circles.size(); i++) {
-            circles[i].ResolveCircleWallCollision(screenWidth, screenHeight);
+            circles[i].ResolveCircleWallCollision(wallxPosition, screenHeight, wallxPosition, wallxVelocity);
             for (int j = i + 1; j < circles.size(); j++) {
                 if (circles[i].CheckCircleCircleCollision(circles[j]))
                     circles[i].ResolveCircleCircleCollision(circles[j]);
@@ -98,7 +98,7 @@ public:
         for (int i = 0; i < numbins; i++) {
             sf::RectangleShape rectangle(sf::Vector2f(rectangleWidth, binoccupancy[i] * 2));
             rectangle.setFillColor(sf::Color::White);
-            rectangle.setPosition(sf::Vector2f(1010 + i * rectangleWidth, screenHeight - binoccupancy[i] * 2));
+            rectangle.setPosition(sf::Vector2f(1015 + i * rectangleWidth, screenHeight - binoccupancy[i] * 2));
             window.draw(rectangle);
         }
 

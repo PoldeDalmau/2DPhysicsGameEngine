@@ -10,6 +10,8 @@ int main()
     float screenHeight = 720;
     float screenWidth = 1280;
     float marginWidth = 280; // margin to display real time stats
+    float wallxPosition = screenWidth - marginWidth;
+    float wallxVelocity = 0;
     vector<std::string> stats;
     // Class initializations
     CircleManager cman(screenWidth - marginWidth, screenHeight);
@@ -17,11 +19,16 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Zocker Physics");
 
-    window.setFramerateLimit(64);
+    //window.setFramerateLimit(64);
 
     sf::Clock clock;
     sf::Time elapsed2 = clock.getElapsedTime();
 
+    // rectangle that represents moving wall
+    sf::RectangleShape rectangle(sf::Vector2f(10, screenHeight));
+    rectangle.setFillColor(sf::Color::White);
+    rectangle.setPosition(sf::Vector2f(wallxPosition, 0));
+    int moveSpeed = 50;
     while (window.isOpen())
     {
         sf::Time elapsed1 = clock.getElapsedTime();
@@ -31,9 +38,22 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-                window.close();
+            else if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::A) {
+                    // Move the rectangle left
+                    rectangle.move(-moveSpeed * deltaTime, 0.0f);
+                    wallxPosition -= moveSpeed * deltaTime;
+                    wallxVelocity = -moveSpeed;
+                }
+                else if (event.key.code == sf::Keyboard::D) {
+                    // Move the rectangle right
+                    rectangle.move(moveSpeed * deltaTime, 0.0f);
+                    wallxPosition += moveSpeed * deltaTime;
+                    wallxVelocity = moveSpeed;
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                    window.close();
+            }
         }
 
         window.clear();
@@ -51,10 +71,13 @@ int main()
 
         // handle all updates:
         cman.makeVelocityHistogram(window, 40, 250);
-        cman.CheckCollisionsAndResolve();
+        cman.CheckCollisionsAndResolve(wallxPosition, wallxVelocity);
+        wallxVelocity = 0;
         cman.UpdateAll(deltaTime);
         cman.DrawAll(window);
         sf::Time elapsed2 = clock.getElapsedTime();
+
+
 
         // output stats to sf window
         sf::Text text;
@@ -69,9 +92,6 @@ int main()
         window.draw(text);
 
 
-        sf::RectangleShape rectangle(sf::Vector2f(1, screenHeight));
-        rectangle.setFillColor(sf::Color::White);
-        rectangle.setPosition(sf::Vector2f(screenWidth - marginWidth, 0));
         window.draw(rectangle);
         window.display();
     }

@@ -128,14 +128,15 @@ public:
 		othercircle.addxVelocity(-impulse * normalX);
 		othercircle.addyVelocity(-impulse * normalY);
 	}
-	void ResolveCircleWallCollision(float screenWidth, float screenHeight) {
+	void ResolveCircleWallCollision(float screenWidth, float screenHeight, float wallxPosition, float wallxVelocity) {
 		if (xPosition < radius) {
 			(*this).setX(radius);
 			(*this).flipxVelocity();
 		}
-		else if (xPosition + radius > screenWidth) {
+		else if (xPosition + radius > wallxPosition) {
 			(*this).setX(screenWidth - radius);
 			(*this).flipxVelocity();
+			(*this).addxVelocity(wallxVelocity);
 		}
 
 		if (yPosition < radius) {

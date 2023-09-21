@@ -74,13 +74,20 @@ public:
 		yVelocity *= -1;
 	}
 	
+	// Get distance between this circle and otherCircle
+	float getDistance(Circle otherCircle) {
+		float distanceX = otherCircle.getxPosition() - xPosition;
+		float distanceY = otherCircle.getyPosition() - yPosition;
+		return std::sqrt(distanceX * distanceX + distanceY * distanceY);
+	}
+
 	// Handle Collisions
-	bool CheckCircleCircleCollision(Circle& othercircle) {
-		float distanceX = othercircle.getxPosition() - xPosition;
-		float distanceY = othercircle.getyPosition() - yPosition;
+	bool CheckCircleCircleCollision(Circle& otherCircle) {
+		float distanceX = otherCircle.getxPosition() - xPosition;
+		float distanceY = otherCircle.getyPosition() - yPosition;
 		float distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
-		float sumOfRadii = radius + othercircle.getRadius();
+		float sumOfRadii = radius + otherCircle.getRadius();
 		float sumOfRadiiSquared = sumOfRadii * sumOfRadii;
 
 		return distanceSquared <= sumOfRadiiSquared;
@@ -91,7 +98,7 @@ public:
 		//first, move circles out of overlap:
 		float distanceX = othercircle.getxPosition() - xPosition;
 		float distanceY = othercircle.getyPosition() - yPosition;
-		float distanceMagnitude = std::sqrt(distanceX * distanceX + distanceY * distanceY);
+		float distanceMagnitude = (*this).getDistance(othercircle);
 		float overlap = (radius + othercircle.getRadius()) - distanceMagnitude;
 
 

@@ -8,6 +8,7 @@ private:
 	float yPosition;
 	float xVelocity;
 	float yVelocity;
+	float mass;
 	sf::Color color;
 
 public:
@@ -20,8 +21,8 @@ public:
 	/// <param name="xVelocity"></param>
 	/// <param name="yVelocity"></param>
 	/// <param name="color"></param>
-	Circle(float radius, float xPosition, float yPosition, float xVelocity, float yVelocity, sf::Color color = sf::Color::White)
-		: radius(radius), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity), yVelocity(yVelocity), color(color) {
+	Circle(float radius, float xPosition, float yPosition, float xVelocity, float yVelocity, float mass = 1, sf::Color color = sf::Color::White)
+		: radius(radius), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity), yVelocity(yVelocity), mass(mass), color(color) {
 	}
 
 	// Gets
@@ -40,6 +41,10 @@ public:
 	}
 	float getyVelocity() {
 		return yVelocity;
+	}
+
+	float getMass() {
+		return mass;
 	}
 
 	// Updates position given a velocity:
@@ -127,13 +132,13 @@ public:
 
 		float dotProduct = relativeVelocityX * normalX + relativeVelocityY * normalY;
 
-		float impulse = (2.0f * dotProduct) / (1.0f + 1.0f); // Assuming equal masses
+		float impulse = (2.0f * dotProduct) / ((*this).getMass() + othercircle.getMass()); // Assuming equal masses
 
-		(*this).addxVelocity(impulse * normalX);
-		(*this).addyVelocity(impulse * normalY);
+		(*this).addxVelocity(impulse * othercircle.getMass() * normalX);
+		(*this).addyVelocity(impulse * othercircle.getMass() * normalY);
 
-		othercircle.addxVelocity(-impulse * normalX);
-		othercircle.addyVelocity(-impulse * normalY);
+		othercircle.addxVelocity(-impulse * (*this).getMass() * normalX);
+		othercircle.addyVelocity(-impulse * (*this).getMass() * normalY);
 	}
 	void ResolveCircleWallCollision(float screenWidth, float screenHeight, float wallxPosition, float wallxVelocity) {
 		if (xPosition < radius) {

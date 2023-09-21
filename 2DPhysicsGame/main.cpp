@@ -13,11 +13,12 @@ int main()
     float wallxPosition = screenWidth - marginWidth;
     float wallxVelocity = 0;
     vector<std::string> stats;
+    // Screen initialization
+    sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandBox");
     // Class initializations
-    CircleManager cman(screenWidth - marginWidth, screenHeight);
+    CircleManager cman(screenWidth - marginWidth, screenHeight, deltaTime, window);
     //cman.AddCirclesMesh(screenHeight, screenWidth - marginWidth, 4, 41, 20);
 
-    sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandBox");
 
     sf::Font font;
 
@@ -40,13 +41,14 @@ int main()
     int moveSpeed = 50;
     
     int numRowsMSS = 3;
-    int numColsMSS = 4;
-    float latticeConstantMSS = 100;
-    float radiusMSS = 10;
-    cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS);
+    int numColsMSS = 3;
+    float latticeConstantMSS = 50;
+    float radiusMSS = 20;
+    float massMSS = 2;
+    cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
 
-    //cman.AddCircle(Circle(10, 100, 100, 50, 0));
-    //cman.AddCircle(Circle(10, 290, 100, 0, 0));
+    cman.AddCircle(Circle(10, 500, 100, 200, 0));
+    cman.AddCircle(Circle(10, 290, 100, 100, -35, 10, sf::Color::Red));
     //cman.AddCircle(Circle(10, 290, 290, 0, 0));
     //cman.AddCircle(Circle(10, 100, 290, 0, 0));
 
@@ -90,14 +92,14 @@ int main()
         //cman.SpringLink(0, 2, 268.7, deltaTime);
         //cman.SpringLink(1, 3, 268.7, deltaTime);
 
-        cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, deltaTime, window);
+        cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
 
-        cman.Gravity(2, deltaTime);
+        cman.Gravity(10);
         cman.CheckCollisionsAndResolve(wallxPosition, wallxVelocity);
         //wallxVelocity = 0;
-        cman.UpdateAll(deltaTime);
+        cman.UpdateAll();
 
-        cman.DrawAll(window);
+        cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
 
 

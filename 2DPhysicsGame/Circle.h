@@ -3,6 +3,7 @@
 
 class Circle {
 private:
+	int index;
 	float radius;
 	float xPosition;
 	float yPosition;
@@ -21,11 +22,16 @@ public:
 	/// <param name="xVelocity"></param>
 	/// <param name="yVelocity"></param>
 	/// <param name="color"></param>
-	Circle(float radius, float xPosition, float yPosition, float xVelocity, float yVelocity, float mass = 1, sf::Color color = sf::Color::White)
-		: radius(radius), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity), yVelocity(yVelocity), mass(mass), color(color) {
+	Circle(float radius, float xPosition, float yPosition, float xVelocity, float yVelocity, int index, float mass = 1, sf::Color color = sf::Color::White)
+		: index(index), radius(radius), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity), yVelocity(yVelocity), mass(mass), color(color) {
 	}
 
+
+
 	// Gets
+	int getIndex() {
+		return this->index;
+	}
 	float getRadius() {
 		return radius;
 	}
@@ -113,12 +119,16 @@ public:
 			float displacementY = (overlap / distanceMagnitude) * distanceY;
 
 			// Move the circles to non-overlapping positions
-			(*this).addxPosition(-displacementX * 0.5f);
-			(*this).addyPosition(-displacementY * 0.5f);
+			//if(getIndex() )
 
-
-			othercircle.addxPosition(displacementX * 0.5f);
-			othercircle.addyPosition(displacementY * 0.5f);
+			if (getIndex() > 9){
+				addxPosition(-displacementX * 0.5f);
+				addyPosition(-displacementY * 0.5f);
+			}
+			if (othercircle.getIndex() > 9) {
+				othercircle.addxPosition(displacementX * 0.5f);
+				othercircle.addyPosition(displacementY * 0.5f);
+			}
 
 		}
 

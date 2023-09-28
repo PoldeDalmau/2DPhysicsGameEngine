@@ -121,14 +121,14 @@ public:
 			// Move the circles to non-overlapping positions
 			//if(getIndex() )
 
-			if (getIndex() > 9){
+			//if (getIndex() > 9){ // hardcoded, change later
 				addxPosition(-displacementX * 0.5f);
 				addyPosition(-displacementY * 0.5f);
-			}
-			if (othercircle.getIndex() > 9) {
+			//}
+			//if (othercircle.getIndex() > 9) {
 				othercircle.addxPosition(displacementX * 0.5f);
 				othercircle.addyPosition(displacementY * 0.5f);
-			}
+			//}
 
 		}
 
@@ -161,13 +161,22 @@ public:
 			(*this).addxVelocity(wallxVelocity);
 		}
 
-		if (yPosition < radius) {
+
+		if (yPosition <= radius) {
 			(*this).flipyVelocity();
 			(*this).setY(radius);
 		}
 		else if (yPosition + radius > screenHeight) {
 			(*this).flipyVelocity();
 			(*this).setY(screenHeight - radius);
+		}
+	}
+
+	void circleFriction(float screenHeight) {
+		float range = 0.1;
+		float frictionCoefficient = 0.7; // fraction of speed lost for being in contact with the ground
+		if (yPosition > screenHeight - (radius + range)) {
+			(*this).addxVelocity(-getxVelocity() * frictionCoefficient);
 		}
 	}
 

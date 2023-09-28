@@ -44,7 +44,6 @@ public:
 
         float relativexPosition = 0;
 
-        int initialNumCircles = numCircles;
         int numPoints = 10;
 
         float angle = 2 * M_PI / numPoints;
@@ -60,8 +59,8 @@ public:
 
     }
     void handleWheel() {
-        float internalDamping = 0.3;
-        float k = 50;
+        float internalDamping = 0.7;
+        float k = 100;
         int numPoints = 10;
         float angle = 2 * M_PI / numPoints;
         float Radius = 40;
@@ -74,6 +73,20 @@ public:
         SpringLink(10, 0, Radius, k, internalDamping);
         SpringLink(10, 1, adjacentCircleDistance, k, internalDamping);
 
+    }
+
+    void turnWheel(int clockwise) {
+        float Radius = 40;
+        float foverm = clockwise * 50000/Radius; // force causing rotation / mass / Radius of wheel
+        int start = 1;
+        int end = 10;
+        int centerCircle = 0;
+        for (int i = start; i < end + 1; i++) {
+            float relativeX = circles[i].getxPosition() - circles[centerCircle].getxPosition();
+            float relativeY = circles[i].getyPosition() - circles[centerCircle].getyPosition();
+            circles[i].addxVelocity(foverm * relativeY/Radius * deltaTime);
+            circles[i].addyVelocity(-foverm * relativeX/Radius * deltaTime);
+        }
     }
 
     //I want to make a class that inherits from CircleManager and is specific for spring systems:
@@ -247,9 +260,11 @@ public:
     }
 
     void UpdateAll() {
-        for (Circle& circle : circles)
+        for (Circle& circle : circles) {
             //if(circle.getIndex() != 4)
                 circle.updatePosition(deltaTime);
+            circle.circleFriction(screenHeight);
+        }
     }
     void CheckCollisionsAndResolve(float wallxPosition, float wallxVelocity) {
         for (int i = 0; i < circles.size(); i++) {

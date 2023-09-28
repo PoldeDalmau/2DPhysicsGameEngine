@@ -46,7 +46,7 @@ int main()
     float massMSS = 20;
     //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
     //cman.AddCirclesMesh(4, 41, 20);
-    cman.initializeWheel(100, 100);
+    cman.initializeWheel(100, 600);
     //cman.AddCircle(Circle(10, 500, 100, 200, 0));
     //cman.AddCircle(Circle(5, 290, 100, 100, -35, 10, 10, sf::Color::Red));
     //cman.AddCircle(Circle(10, 290, 290, 0, 0));
@@ -61,8 +61,14 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            // Allows to move wall
-            //else if (event.type == sf::Event::KeyPressed) {
+            else if (event.type == sf::Event::KeyPressed) {
+                //spin wheel
+                if (event.key.code == sf::Keyboard::D)
+                    cman.turnWheel(-1);
+                else if(event.key.code == sf::Keyboard::A)
+                    cman.turnWheel(1);
+
+            //    Allows to move wall
             //    if (event.key.code == sf::Keyboard::A) {
             //        // Move the rectangle left
             //        rectangle.move(-moveSpeed * deltaTime, 0.0f);
@@ -75,16 +81,16 @@ int main()
             //        wallxPosition += moveSpeed * deltaTime;
             //        wallxVelocity = moveSpeed;
             //    }
-            //    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-            //        window.close();
-            //}
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                    window.close();
+            }
         }
 
         window.clear();
 
         //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
 
-        cman.Gravity(10);
+        cman.Gravity(50);
         cman.CheckCollisionsAndResolve(wallxPosition, wallxVelocity);
         //wallxVelocity = 0;
         cman.handleWheel();
@@ -96,7 +102,7 @@ int main()
 
 
         // output stats to sf window
-        cman.makeVelocityHistogram(30, 25);
+        //cman.makeVelocityHistogram(30, 25);
 
         //stats = cman.getStats();
         //sf::Text text;

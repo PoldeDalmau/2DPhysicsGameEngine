@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Car.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="CircleManager.h" />
   </ItemGroup>

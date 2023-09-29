@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include "Circle.h"
 #include "CircleManager.h"
+#include "Car.h"
 #include <iostream>
 
 int main()
@@ -16,7 +17,7 @@ int main()
     // Screen initialization
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandBox");
     // Class initializations
-    CircleManager cman(screenWidth - marginWidth, screenHeight, deltaTime, window);
+    Car car(screenWidth - marginWidth, screenHeight, deltaTime, window, 3, 15);
 
 
     sf::Font font;
@@ -39,14 +40,13 @@ int main()
     rectangle.setPosition(sf::Vector2f(wallxPosition, 0));
     int moveSpeed = 100;
     
-    int numRowsMSS = 3;
-    int numColsMSS = 3;
-    float latticeConstantMSS = 50;
-    float radiusMSS = 20;
-    float massMSS = 20;
+    //int numRowsMSS = 3;
+    //int numColsMSS = 3;
+    //float latticeConstantMSS = 50;
+    //float radiusMSS = 20;
+    //float massMSS = 20;
     //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
     //cman.AddCirclesMesh(4, 41, 20);
-    cman.initializeWheel(100, 600);
     //cman.AddCircle(Circle(10, 500, 100, 200, 0));
     //cman.AddCircle(Circle(5, 290, 100, 100, -35, 10, 10, sf::Color::Red));
     //cman.AddCircle(Circle(10, 290, 290, 0, 0));
@@ -64,9 +64,9 @@ int main()
             else if (event.type == sf::Event::KeyPressed) {
                 //spin wheel
                 if (event.key.code == sf::Keyboard::D)
-                    cman.turnWheel(-1);
+                    car.turnWheel(-1);
                 else if(event.key.code == sf::Keyboard::A)
-                    cman.turnWheel(1);
+                    car.turnWheel(1);
 
             //    Allows to move wall
             //    if (event.key.code == sf::Keyboard::A) {
@@ -90,13 +90,12 @@ int main()
 
         //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
 
-        cman.Gravity(50);
-        cman.CheckCollisionsAndResolve(wallxPosition, wallxVelocity);
+        car.Gravity(50);
+        car.CheckCollisionsAndResolve(wallxPosition, wallxVelocity);
         //wallxVelocity = 0;
-        cman.handleWheel();
-        cman.UpdateAll();
+        car.updateCar();
 
-        cman.DrawAll();
+        car.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
 
 

@@ -30,7 +30,7 @@ public:
 
 	// Gets
 	int getIndex() {
-		return this->index;
+		return index;
 	}
 	float getRadius() {
 		return radius;

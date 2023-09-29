@@ -13,14 +13,14 @@ using std::vector;
 
 class CircleManager {
 private:
-    vector<Circle> circles;
     float screenWidth;
     float screenHeight;
     vector<float> velocityDistribution;
-    float deltaTime;
     sf::RenderWindow& window;
-    int numCircles;
 public:
+    vector<Circle> circles;
+    float deltaTime;
+    int numCircles;
     
     CircleManager(float screenWidth, float screenHeight, float deltaTime, 
         sf::RenderWindow& window) : screenWidth(screenWidth), screenHeight(screenHeight), 
@@ -36,58 +36,7 @@ public:
         numCircles++;
     }
 
-    void initializeWheel(float xPosition, float yPosition) {
-        float radius = 5;
-        float Radius = 40;
-        float relativeyPosition;
-        
-
-        float relativexPosition = 0;
-
-        int numPoints = 10;
-
-        float angle = 2 * M_PI / numPoints;
-        float adjacentCircleDistance = 2 * Radius * sin(angle / 2);
-
-        AddCircle(Circle(radius, xPosition, yPosition, 0, 0, numCircles,1,sf::Color::Red));
-        for (int i = 0; i < numPoints; i++) {
-
-            relativexPosition = Radius * (cos(angle * i));
-            relativeyPosition = Radius * (sin(angle * i));
-            AddCircle(Circle(radius, xPosition + relativexPosition, yPosition + relativeyPosition, 0, 0, numCircles));
-        }
-
-    }
-    void handleWheel() {
-        float internalDamping = 0.7;
-        float k = 100;
-        int numPoints = 10;
-        float angle = 2 * M_PI / numPoints;
-        float Radius = 40;
-        float adjacentCircleDistance = 2 * Radius * sin(angle / 2);
-
-        for (int i = 1; i < numPoints; i++) {
-            SpringLink(i, i + 1, adjacentCircleDistance, k, internalDamping);
-            SpringLink(i, 0, Radius, k, internalDamping);
-        }
-        SpringLink(10, 0, Radius, k, internalDamping);
-        SpringLink(10, 1, adjacentCircleDistance, k, internalDamping);
-
-    }
-
-    void turnWheel(int clockwise) {
-        float Radius = 40;
-        float foverm = clockwise * 50000/Radius; // force causing rotation / mass / Radius of wheel
-        int start = 1;
-        int end = 10;
-        int centerCircle = 0;
-        for (int i = start; i < end + 1; i++) {
-            float relativeX = circles[i].getxPosition() - circles[centerCircle].getxPosition();
-            float relativeY = circles[i].getyPosition() - circles[centerCircle].getyPosition();
-            circles[i].addxVelocity(foverm * relativeY/Radius * deltaTime);
-            circles[i].addyVelocity(-foverm * relativeX/Radius * deltaTime);
-        }
-    }
+    
 
     //I want to make a class that inherits from CircleManager and is specific for spring systems:
     //Problems to think about:

@@ -7,7 +7,7 @@
 int main()
 {
     // Variable initializations
-    float deltaTime = 0.01f;
+    float deltaTime = 0.005f;
     float screenHeight = 720;
     float screenWidth = 1280;
     float marginWidth = 280; // margin to display real time stats
@@ -17,7 +17,7 @@ int main()
     // Screen initialization
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandBox");
     // Class initializations
-    Car car(screenWidth - marginWidth, screenHeight, deltaTime, window, 3, 15);
+    Car car(screenWidth - marginWidth, screenHeight, deltaTime, window, 2, 40);
 
 
     sf::Font font;
@@ -65,8 +65,11 @@ int main()
                 //spin wheel
                 if (event.key.code == sf::Keyboard::D)
                     car.turnWheel(-1);
-                else if(event.key.code == sf::Keyboard::A)
+                else if (event.key.code == sf::Keyboard::A)
                     car.turnWheel(1);
+                else if (event.key.code == sf::Keyboard::Space)
+                    car.jump();
+
 
             //    Allows to move wall
             //    if (event.key.code == sf::Keyboard::A) {
@@ -90,8 +93,7 @@ int main()
 
         //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
 
-        car.Gravity(50);
-        car.CheckCollisionsAndResolve(wallxPosition, wallxVelocity);
+        car.Gravity(100);
         //wallxVelocity = 0;
         car.updateCar();
 

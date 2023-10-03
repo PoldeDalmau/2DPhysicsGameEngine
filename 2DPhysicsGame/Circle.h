@@ -150,13 +150,13 @@ public:
 		othercircle.addxVelocity(-impulse * (*this).getMass() * normalX);
 		othercircle.addyVelocity(-impulse * (*this).getMass() * normalY);
 	}
-	void ResolveCircleWallCollision(float screenWidth, float screenHeight, float wallxPosition, float wallxVelocity) {
+	void ResolveCircleWallCollision(float screenWidth, float screenHeight, float wallxPosition, float wallxVelocity, bool& canJump) {
 		if (xPosition < radius) {
 			(*this).setX(radius);
 			(*this).flipxVelocity();
 		}
 		else if (xPosition + radius > wallxPosition) {
-			(*this).setX(screenWidth - radius);
+			(*this).setX(screenWidth - radius); // something looks wrong here 
 			(*this).flipxVelocity();
 			(*this).addxVelocity(wallxVelocity);
 		}
@@ -169,12 +169,13 @@ public:
 		else if (yPosition + radius > screenHeight) {
 			(*this).flipyVelocity();
 			(*this).setY(screenHeight - radius);
+			canJump = true;
 		}
 	}
 
 	void circleFriction(float screenHeight) {
 		float range = 0.1;
-		float frictionCoefficient = 0.7; // fraction of speed lost for being in contact with the ground
+		float frictionCoefficient = 0.99; // fraction of speed lost for being in contact with the ground
 		if (yPosition > screenHeight - (radius + range)) {
 			(*this).addxVelocity(-getxVelocity() * frictionCoefficient);
 		}

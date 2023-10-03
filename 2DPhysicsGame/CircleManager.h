@@ -3,8 +3,6 @@
 #include <vector>
 #include <cassert>
 
-#define _USE_MATH_DEFINES
-#include <math.h>
 
 // Use (void) to silence unused warnings.
 #define assertm(exp, msg) assert(((void)msg, exp))
@@ -215,17 +213,15 @@ public:
             circle.circleFriction(screenHeight);
         }
     }
-    void CheckCollisionsAndResolve(float wallxPosition, float wallxVelocity) {
+    void CheckCollisionsAndResolve(bool& canJump) {
         for (int i = 0; i < circles.size(); i++) {
-            circles[i].ResolveCircleWallCollision(wallxPosition, screenHeight, wallxPosition, wallxVelocity);
-            for (int j = i + 1; j < circles.size(); j++) {
-                if (circles[i].CheckCircleCircleCollision(circles[j]))
-                    circles[i].ResolveCircleCircleCollision(circles[j]);
-            }
+            circles[i].ResolveCircleWallCollision(screenWidth, screenHeight, screenWidth, 0, canJump);
+            //for (int j = i + 1; j < circles.size(); j++) {
+            //    if (circles[i].CheckCircleCircleCollision(circles[j]))
+            //        circles[i].ResolveCircleCircleCollision(circles[j]);
+            //}
         }
     }
-
-
 
     void DrawAll() {
         for (Circle& circle : circles)

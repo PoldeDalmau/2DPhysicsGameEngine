@@ -16,11 +16,12 @@ private:
     vector<float> velocityDistribution;
     sf::RenderWindow& window;
 public:
+    //bool canJump = false;
     vector<Circle> circles;
-    float deltaTime;
+    const float deltaTime;
     int numCircles;
     
-    CircleManager(float screenWidth, float screenHeight, float deltaTime, 
+    CircleManager(float screenWidth, float screenHeight, const float deltaTime, 
         sf::RenderWindow& window) : screenWidth(screenWidth), screenHeight(screenHeight), 
         deltaTime(deltaTime), window(window), numCircles(0)
     {}
@@ -166,7 +167,7 @@ public:
     // g: acceleration
     void Gravity(float g) {
         for (Circle & circle : circles){
-            circle.addyVelocity(g * deltaTime); // down is up in sfml
+            circle.addyAcceleration(g); // down is up in sfml
         }
 
     }
@@ -183,44 +184,67 @@ public:
     // Binds two circles via a harmonic potential. 
     // eqDistance: Equilibrium position at which the force is zero.
     // k: spring constant
-    void SpringLink(int circle1Index, int circle2Index, float eqDistance, float k = 1000, float damping = 0) {
+
+    float SpringForce(){
+    }
+
+    void RodLink(int circle1Index, int circle2Index, float eqDistance) {
         assert(circle1Index < circles.size(), "circle index out of bounds");
         assert(circle2Index < circles.size(), "circle index out of bounds");
+
+
+
+    }
+
+    void SpringLink(int circle1Index, int circle2Index, float eqDistance, float k = 1000, float damping = 0, bool draw = true) {
+        assert(circle1Index < circles.size(), "circle index out of bounds");
+        assert(circle2Index < circles.size(), "circle index out of bounds");
+
         // draw link
-        drawSpring(circle1Index, circle2Index);
+        if(draw)
+            drawSpring(circle1Index, circle2Index);
 
         float distance = circles[circle1Index].getDistance(circles[circle2Index]);
         float distanceX = circles[circle2Index].getxPosition() - circles[circle1Index].getxPosition();
         float distanceY = circles[circle2Index].getyPosition() - circles[circle1Index].getyPosition();
+        float relativeVelocityX = circles[circle2Index].getxVelocity() - circles[circle1Index].getxVelocity();
+        float relativeVelocityY = circles[circle2Index].getxVelocity() - circles[circle1Index].getxVelocity();
         // Hook's Law
         // harmonic potential around the equilibrium distance eqDistance
         //float damping = 0.05;
-        float forceX = k * distanceX * (1 - eqDistance / distance) * deltaTime;
-        float forceY = k * distanceY * (1 - eqDistance / distance) * deltaTime;
+        float forceX = distanceX/distance * (k * (distance - eqDistance) + damping * relativeVelocityX * distanceX / distance);
+        float forceY = distanceY/distance * (k * (distance - eqDistance) + damping * relativeVelocityY * distanceY / distance);
         // Update velocities according to Hook
-        circles[circle1Index].addxVelocity(forceX/ circles[circle1Index].getMass() - damping * (circles[circle1Index].getxVelocity() - circles[circle2Index].getxVelocity()) * deltaTime);
-        circles[circle1Index].addyVelocity(forceY/ circles[circle1Index].getMass() - damping * (circles[circle1Index].getxVelocity() - circles[circle2Index].getxVelocity()) * deltaTime);
-        circles[circle2Index].addxVelocity(- forceX/ circles[circle2Index].getMass() - damping * (circles[circle2Index].getxVelocity() - circles[circle1Index].getxVelocity()) * deltaTime);
-        circles[circle2Index].addyVelocity(- forceY/ circles[circle2Index].getMass() - damping * (circles[circle2Index].getxVelocity() - circles[circle1Index].getxVelocity()) * deltaTime);
+        circles[circle1Index].addxAcceleration(forceX / circles[circle1Index].getMass());
+        circles[circle1Index].addyAcceleration(forceY / circles[circle1Index].getMass());
+        circles[circle2Index].addxAcceleration(- forceX / circles[circle2Index].getMass());
+        circles[circle2Index].addyAcceleration(- forceY / circles[circle2Index].getMass());
 
 
     }
 
-    void UpdateAll() {
+    void UpdateAll(bool& canJump) {
         for (Circle& circle : circles) {
             //if(circle.getIndex() != 4)
-                circle.updatePosition(deltaTime);
+            //circle.updatePositionEuler(deltaTime);
+            circle.updatePostionVerlet(deltaTime);
             circle.circleFriction(screenHeight);
         }
+        CheckCollisionsAndResolve(canJump);
     }
     void CheckCollisionsAndResolve(bool& canJump) {
+        bool contact = false;
         for (int i = 0; i < circles.size(); i++) {
-            circles[i].ResolveCircleWallCollision(screenWidth, screenHeight, screenWidth, 0, canJump);
+            circles[i].ResolveCircleWallCollision(screenWidth, screenHeight, screenWidth, 0, contact);
             //for (int j = i + 1; j < circles.size(); j++) {
             //    if (circles[i].CheckCircleCircleCollision(circles[j]))
             //        circles[i].ResolveCircleCircleCollision(circles[j]);
             //}
         }
+        if (contact)
+            canJump = true;
+        else
+            canJump = false;
     }
 
     void DrawAll() {

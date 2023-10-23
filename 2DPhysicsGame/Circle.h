@@ -9,10 +9,14 @@ private:
 	float yPosition;
 	float xVelocity;
 	float yVelocity;
+	float xAcceleration = 0;
+	float yAcceleration = 0;
 	float mass;
 	sf::Color color;
 
 public:
+	float oldXAcceleration = 0;
+	float oldYAcceleration = 0;
 	/// <summary>
 	/// 
 	/// </summary>
@@ -53,10 +57,33 @@ public:
 		return mass;
 	}
 
-	// Updates position given a velocity:
-	void updatePosition(float deltaTime) {
+	// Updates position given a velocity using Euler integration:
+	void updatePositionEuler(const float deltaTime) {
 		xPosition += xVelocity * deltaTime;
 		yPosition += yVelocity * deltaTime;
+	}
+
+
+	// Updates position given an initial position, velocity and acceleration using the Velocity Verlet integrator:
+	void updatePostionVerlet(const float deltaTime) {
+		float oldXPosition = xPosition;
+		float oldYPosition = yPosition;
+		float oldXVelocity = xVelocity;
+		float oldYVelocity = yVelocity;
+		float oldXAcceleration = xAcceleration;
+		float oldYAcceleration = yAcceleration;
+		xPosition += oldXVelocity * deltaTime + oldXAcceleration * deltaTime * deltaTime;
+		yPosition += oldYVelocity * deltaTime + oldYAcceleration * deltaTime * deltaTime;
+
+		// update accelerations
+
+		xVelocity += (oldXAcceleration + xAcceleration) / 2 * deltaTime;
+		yVelocity += (oldYAcceleration + yAcceleration) / 2 * deltaTime;
+
+		oldXAcceleration = xAcceleration;
+		oldYAcceleration = yAcceleration;
+		xAcceleration = 0;
+		yAcceleration = 0;
 	}
 
 	// Sets
@@ -83,6 +110,12 @@ public:
 	}
 	void flipyVelocity() {
 		yVelocity *= -1;
+	}
+	void addxAcceleration(float ax) {
+		xAcceleration += ax;
+	}
+	void addyAcceleration(float ay) {
+		yAcceleration += ay;
 	}
 	
 	// Get distance between this circle and otherCircle
@@ -150,7 +183,7 @@ public:
 		othercircle.addxVelocity(-impulse * (*this).getMass() * normalX);
 		othercircle.addyVelocity(-impulse * (*this).getMass() * normalY);
 	}
-	void ResolveCircleWallCollision(float screenWidth, float screenHeight, float wallxPosition, float wallxVelocity, bool& canJump) {
+	void ResolveCircleWallCollision(float screenWidth, float screenHeight, float wallxPosition, float wallxVelocity, bool& contact) {
 		if (xPosition < radius) {
 			(*this).setX(radius);
 			(*this).flipxVelocity();
@@ -169,13 +202,13 @@ public:
 		else if (yPosition + radius > screenHeight) {
 			(*this).flipyVelocity();
 			(*this).setY(screenHeight - radius);
-			canJump = true;
+			contact = true;
 		}
 	}
 
 	void circleFriction(float screenHeight) {
 		float range = 0.1;
-		float frictionCoefficient = 0.99; // fraction of speed lost for being in contact with the ground
+		float frictionCoefficient = 0.70; // fraction of speed lost for being in contact with the ground
 		if (yPosition > screenHeight - (radius + range)) {
 			(*this).addxVelocity(-getxVelocity() * frictionCoefficient);
 		}

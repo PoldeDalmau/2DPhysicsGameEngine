@@ -7,7 +7,7 @@
 int main()
 {
     // Variable initializations
-    float deltaTime = 0.005f;
+    const float deltaTime = 0.01f;
     float screenHeight = 720;
     float screenWidth = 1280;
     float marginWidth = 280; // margin to display real time stats
@@ -17,8 +17,8 @@ int main()
     // Screen initialization
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandBox");
     // Class initializations
-    Car car(screenWidth - marginWidth, screenHeight, deltaTime, window, 2, 40);
-
+    Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
+    //CircleManager cman(screenWidth, screenHeight, deltaTime, window);
 
     sf::Font font;
 
@@ -40,14 +40,15 @@ int main()
     rectangle.setPosition(sf::Vector2f(wallxPosition, 0));
     int moveSpeed = 100;
     
-    //int numRowsMSS = 3;
-    //int numColsMSS = 3;
-    //float latticeConstantMSS = 50;
-    //float radiusMSS = 20;
-    //float massMSS = 20;
+    int numRowsMSS = 3;
+    int numColsMSS = 3;
+    float latticeConstantMSS = 50;
+    float radiusMSS = 20;
+    float massMSS = 20;
     //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
     //cman.AddCirclesMesh(4, 41, 20);
-    //cman.AddCircle(Circle(10, 500, 100, 200, 0));
+    //cman.AddCircle(Circle(20, 100, 200, 0, 0, 0, 50));
+    //cman.AddCircle(Circle(20, 180, 200, 0, 0, 1, 50,sf::Color::Blue));
     //cman.AddCircle(Circle(5, 290, 100, 100, -35, 10, 10, sf::Color::Red));
     //cman.AddCircle(Circle(10, 290, 290, 0, 0));
     //cman.AddCircle(Circle(10, 100, 290, 0, 0));
@@ -62,13 +63,15 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::KeyPressed) {
-                //spin wheel
+                ////spin wheel
                 if (event.key.code == sf::Keyboard::D)
                     car.turnWheel(-1);
-                else if (event.key.code == sf::Keyboard::A)
+                if (event.key.code == sf::Keyboard::A)
                     car.turnWheel(1);
-                else if (event.key.code == sf::Keyboard::Space)
+                if (event.key.code == sf::Keyboard::Space)
                     car.jump();
+                if (event.key.code == sf::Keyboard::V)
+                    car.drawSprings();
 
 
             //    Allows to move wall
@@ -92,12 +95,15 @@ int main()
         window.clear();
 
         //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
-
-        car.Gravity(100);
         //wallxVelocity = 0;
+
+        car.Gravity(10);
+        //cman.SpringLink(0, 1, 200, 10);
+        //cman.UpdateAll();
         car.updateCar();
 
         car.DrawAll();
+        //cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
 
 
@@ -118,7 +124,7 @@ int main()
         //window.draw(text);
 
 
-        window.draw(rectangle);
+        //window.draw(rectangle);
         window.display();
     }
 

@@ -59,7 +59,7 @@ public:
 
 
                 //SpringLink(i + j, (i - 1) * numCirclesRow + j, latticeConstant); // left neighbor
-                //drawSpring(window, i + j, (i - 1) * numCirclesRow + j);
+                //drawLine(window, i + j, (i - 1) * numCirclesRow + j);
 
                 //SpringLink(i + j, i + (j - numCirclesRow), latticeConstant); // above neighbor
                 //SpringLink(i + j, (i - 1) + (j - numCirclesRow), latticeConstant); // above left neightbor
@@ -172,7 +172,7 @@ public:
 
     }
 
-    void drawSpring(int startIndex, int endIndex)
+    void drawLine(int startIndex, int endIndex)
     {// draw vertices
         sf::VertexArray line(sf::Lines, 2);
         line[0].color = sf::Color::White;
@@ -192,7 +192,19 @@ public:
         assert(circle1Index < circles.size(), "circle index out of bounds");
         assert(circle2Index < circles.size(), "circle index out of bounds");
 
+        float distance = circles[circle1Index].getDistance(circles[circle2Index]);
+        float normX = (circles[circle2Index].getxPosition() - circles[circle1Index].getxPosition()) / distance;
+        float normY = (circles[circle2Index].getyPosition() - circles[circle1Index].getyPosition()) / distance;
+        float displacement = (distance - eqDistance)/2;
 
+        float xDisp = normX * displacement;
+        float yDisp = normY * displacement;
+        drawLine(circle1Index, circle2Index);
+
+        circles[circle1Index].addxPosition(xDisp/2);
+        circles[circle2Index].addxPosition(-xDisp/2);
+        circles[circle1Index].addyPosition(yDisp/2);
+        circles[circle2Index].addyPosition(-yDisp/2);
 
     }
 
@@ -202,7 +214,7 @@ public:
 
         // draw link
         if(draw)
-            drawSpring(circle1Index, circle2Index);
+            drawLine(circle1Index, circle2Index);
 
         float distance = circles[circle1Index].getDistance(circles[circle2Index]);
         float distanceX = circles[circle2Index].getxPosition() - circles[circle1Index].getxPosition();

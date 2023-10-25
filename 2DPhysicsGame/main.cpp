@@ -18,7 +18,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandBox");
     // Class initializations
     Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
-    //CircleManager cman(screenWidth, screenHeight, deltaTime, window);
+    CircleManager cman(screenWidth, screenHeight, deltaTime, window);
 
     sf::Font font;
 
@@ -52,6 +52,10 @@ int main()
     //cman.AddCircle(Circle(5, 290, 100, 100, -35, 10, 10, sf::Color::Red));
     //cman.AddCircle(Circle(10, 290, 290, 0, 0));
     //cman.AddCircle(Circle(10, 100, 290, 0, 0));
+    //cman.AddCircle(Circle(10, 290, 290, 100, 0, 0));
+    //cman.AddCircle(Circle(10, 100, 400, 0, 50, 1));
+
+    bool dummy = false;
 
     while (window.isOpen())
     {
@@ -97,9 +101,11 @@ int main()
         //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
         //wallxVelocity = 0;
 
-        car.Gravity(10);
+        car.Gravity(25);
+        //cman.Gravity(10);
         //cman.SpringLink(0, 1, 200, 10);
-        //cman.UpdateAll();
+        //cman.RodLink(0, 1, 200);
+        //cman.UpdateAll(dummy);
         car.updateCar();
 
         car.DrawAll();

@@ -101,10 +101,15 @@ public:
          //chassis with wheels
         float chassisWheelDist = Radius * sqrt(1/4 + 4); // sqrt(Radius/2^2 + 2 Radius^2)
         float chassisWheelDistDiag = sqrt(Radius*Radius*(1/4 + 4) + (wheel_separation - Radius/2)* (wheel_separation - Radius / 2)); // sqrt(Radius/2^2 + 2 Radius^2)
-        SpringLink(0, numPointsOnWheel * 2 + 2 + 1, chassisWheelDist, k_chassis, internalDamping);
-        SpringLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2, chassisWheelDist, k_chassis, internalDamping);
+        //SpringLink(0, numPointsOnWheel * 2 + 2 + 1, chassisWheelDist, k_chassis, internalDamping);
+        //SpringLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2, chassisWheelDist, k_chassis, internalDamping);
         SpringLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2 + 1, chassisWheelDistDiag, k_chassis, internalDamping);
         SpringLink(0, numPointsOnWheel * 2 + 2, chassisWheelDistDiag, k_chassis, internalDamping);
+
+        RodLink(0, numPointsOnWheel * 2 + 2 + 1, chassisWheelDist);
+        RodLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2, chassisWheelDist);
+      /*  RodLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2 + 1, chassisWheelDistDiag);
+        RodLink(0, numPointsOnWheel * 2 + 2, chassisWheelDistDiag);*/
 
     }
 

@@ -1,7 +1,7 @@
 # 2DPhysicsGame
 A start to make a game that uses solid balls and the physics that governs them. 
 
-![ideal gas](https://github.com/PoldeDalmau/2DPhysicsGame/assets/73791685/c98f1992-07ad-4c43-91e6-ee9249ec6270)
+![Uploading ideal gas.gif…]()
 
 
 

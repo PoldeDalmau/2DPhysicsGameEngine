@@ -136,6 +136,8 @@
     <ClInclude Include="Car.h" />
     <ClInclude Include="Circle.h" />
     <ClInclude Include="CircleManager.h" />
+    <ClInclude Include="Shape.h" />
+    <ClInclude Include="Rectangle.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>

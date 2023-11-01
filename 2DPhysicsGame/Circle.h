@@ -26,8 +26,11 @@ public:
 	/// <param name="xVelocity"></param>
 	/// <param name="yVelocity"></param>
 	/// <param name="color"></param>
-	Circle(float radius, float xPosition, float yPosition, float xVelocity, float yVelocity, int index, float mass = 1, sf::Color color = sf::Color::White)
-		: index(index), radius(radius), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity), yVelocity(yVelocity), mass(mass), color(color) {
+	Circle(float radius, float xPosition, float yPosition, float xVelocity, float yVelocity,
+		int index, float mass = 1, sf::Color color = sf::Color::White)
+		: 
+		index(index), radius(radius), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity),
+		yVelocity(yVelocity), mass(mass), color(color) {
 	}
 
 
@@ -65,13 +68,15 @@ public:
 
 
 	// Updates position given an initial position, velocity and acceleration using the Velocity Verlet integrator:
+	// pending: not actually using the correct method
+	// Acceleration is calculated from old position -> should be new position
 	void updatePostionVerlet(const float deltaTime) {
 		float oldXPosition = xPosition;
 		float oldYPosition = yPosition;
 		float oldXVelocity = xVelocity;
 		float oldYVelocity = yVelocity;
-		float oldXAcceleration = xAcceleration;
-		float oldYAcceleration = yAcceleration;
+		oldXAcceleration = xAcceleration;
+		oldYAcceleration = yAcceleration;
 		xPosition += oldXVelocity * deltaTime + oldXAcceleration * deltaTime * deltaTime;
 		yPosition += oldYVelocity * deltaTime + oldYAcceleration * deltaTime * deltaTime;
 
@@ -82,8 +87,8 @@ public:
 
 		oldXAcceleration = xAcceleration;
 		oldYAcceleration = yAcceleration;
-		xAcceleration = 0;
-		yAcceleration = 0;
+		//xAcceleration = 0;
+		//yAcceleration = 0;
 	}
 
 	// Sets

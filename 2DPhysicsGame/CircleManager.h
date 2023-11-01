@@ -53,6 +53,7 @@ public:
     }
 
     void handleSpringSystem(int numCirclesRow, int numCirclesColumn, float latticeConstant) {
+        //this is awful. I should change it!
         for (int i = 1; i < numCirclesRow - 1; i++)
             for (int j = 1; j < numCirclesColumn - 1; j++) {
                 //if (i > 1 && i < numCirclesRow - 1) {

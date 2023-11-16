@@ -1,101 +1,218 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Shape.h"
 
 
-class Rectangle {
-private:
-	int index;
+class Rectangle : public Shape {
+public:
 	float rectangleHeight;
 	float rectangleWidth;
-	float xPosition;
-	float yPosition;
-	float xVelocity;
-	float yVelocity;
-	float xAcceleration = 0;
-	float yAcceleration = 0;
-	float mass;
 	float angle;
 	float angularVelocity;
 	float angularAcceleration;
-	sf::Color color;
 	sf::RectangleShape rectangleImage;
-public:
+	float halfdiag;
 	float oldXAcceleration = 0;
 	float oldYAcceleration = 0;
-	Rectangle(float rectangleHeight, float rectangleWidth, float xPosition, float yPosition, float xVelocity, float yVelocity,
-		float angle, float angularVelocity, float angularAcceleration, int index, float mass = 1, sf::Color color = sf::Color::White)
+	int numAxes = 2; // rectangles have two axes
+	Point vertexA, vertexB, vertexC, vertexD; // shape vertices
+	Rectangle(
+		float xPosition,
+		float yPosition,
+		float xVelocity,
+		float yVelocity,
+		int index,
+		float mass,
+		sf::Color color,
+		float rectangleHeight, 
+		float rectangleWidth, 
+		float angle,
+		float angularVelocity, 
+		float angularAcceleration = 0)
 		: 
-		rectangleHeight(rectangleHeight), rectangleWidth(rectangleWidth), index(index), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity), yVelocity(yVelocity), angle(angle),
-		angularVelocity(angularVelocity), angularAcceleration(angularAcceleration), mass(mass), color(color) 
+		Shape(xPosition, yPosition, xVelocity, yVelocity, index, mass, color),
+		rectangleHeight(rectangleHeight), 
+		rectangleWidth(rectangleWidth), 
+		angle(angle),
+		angularVelocity(angularVelocity), 
+		angularAcceleration(angularAcceleration)
 	{
-
+		halfdiag = 0.5 * sqrt(float(rectangleHeight) * rectangleHeight + rectangleWidth * rectangleWidth);
 		rectangleImage = sf::RectangleShape(sf::Vector2f(rectangleWidth, rectangleHeight));
 		rectangleImage.setFillColor(color);
+		rectangleImage.setOrigin(sf::Vector2f(rectangleWidth/2,rectangleHeight/2));
 
+		//A B
+		//D C vertices with origin set in the middle of the shape without rotation
+		vertexA = Point(-rectangleWidth/2, -rectangleHeight/2);
+		vertexB = Point(rectangleWidth/2, -rectangleHeight/2);
+		vertexC = Point(rectangleWidth/2, rectangleHeight/2);
+		vertexD = Point(-rectangleWidth/2, rectangleHeight/2);
 	}
 
-	// Sets
-	void setX(float x) {
-		xPosition = x;
+	vector<Point> getVertices() {
+		vector<Point> vertices(4);
+		vertices[0] = rotate(vertexA) + Point(xPosition, yPosition);
+		vertices[1] = rotate(vertexB) + Point(xPosition, yPosition);
+		vertices[2] = rotate(vertexC) + Point(xPosition, yPosition);
+		vertices[3] = rotate(vertexD) + Point(xPosition, yPosition);
+		return vertices;
 	}
-	void setY(float y) {
-		yPosition = y;
-	}
-	void addxPosition(float x) {
-		xPosition += x;
-	}
-	void addyPosition(float y) {
-		yPosition += y;
-	}
-	void addxVelocity(float vx) {
-		xVelocity += vx;
-	}
-	void addyVelocity(float vy) {
-		yVelocity += vy;
-	}
-	void flipxVelocity() {
-		xVelocity *= -1;
-	}
-	void flipyVelocity() {
-		yVelocity *= -1;
-	}
-	void addxAcceleration(float ax) {
-		xAcceleration += ax;
-	}
-	void addyAcceleration(float ay) {
-		yAcceleration += ay;
+
+	vector<Point> getAxes(Rectangle other) {
+		vector<Point> axes(4);
+		axes[0] = this->rotate(Point(1, 0));
+		axes[1] = this->rotate(Point(0, 1));
+		axes[2] = other.rotate(Point(1, 0));
+		axes[3] = other.rotate(Point(0, 1));
+		return axes;
 	}
 
 	void addAngularVelocity(float omegaZ) {
 		angularVelocity += omegaZ;
 	}
+
 	void addAngularAcceleration(float alphaZ) {
 		angularAcceleration += alphaZ;
 	}
 
-	// Updates position given an initial position, velocity and acceleration using the Velocity Verlet integrator:
-	void updatePostionVerlet(const float deltaTime) {
-		float oldXPosition = xPosition;
-		float oldYPosition = yPosition;
-		float oldXVelocity = xVelocity;
-		float oldYVelocity = yVelocity;
-		float oldXAcceleration = xAcceleration;
-		float oldYAcceleration = yAcceleration;
-		xPosition += oldXVelocity * deltaTime + oldXAcceleration * deltaTime * deltaTime;
-		yPosition += oldYVelocity * deltaTime + oldYAcceleration * deltaTime * deltaTime;
-
-		// update accelerations
-
-		xVelocity += (oldXAcceleration + xAcceleration) / 2 * deltaTime;
-		yVelocity += (oldYAcceleration + yAcceleration) / 2 * deltaTime;
-
-		oldXAcceleration = xAcceleration;
-		oldYAcceleration = yAcceleration;
-		xAcceleration = 0;
-		yAcceleration = 0;
+	void update(const float deltaTime) {
+		updateAngleEuler(deltaTime);
+		updatePositionEuler(deltaTime);
 	}
 
-	void Draw(sf::RenderWindow& window) {
+	void updateAngleEuler(const float deltaTime) {
+		angle += angularVelocity * deltaTime;
+	}
+
+	Point rotate(Point vertex) {
+		float angleRad = angle * M_PI / 180; // convert to radians
+
+		Point rotated;
+		rotated.x = vertex.x * cos(angleRad) - vertex.y * sin(angleRad);
+		rotated.y = vertex.x * sin(angleRad) + vertex.y * cos(angleRad);
+		return rotated;
+	}
+
+	bool isNearRectangle(Rectangle other) {
+		float pseudoRadius = halfdiag;
+		float pseudoRadius2 = other.halfdiag;
+
+		float distanceX = other.getxPosition() - xPosition;
+		float distanceY = other.getyPosition() - yPosition;
+		float distanceSquared = sqrt(distanceX * distanceX + distanceY * distanceY);
+
+		if (distanceSquared <= pseudoRadius+ pseudoRadius2){
+			return true;
+		}
+		else {
+			rectangleImage.setFillColor(color);
+			return false;
+		}
+
+	}
+	bool isRectangleCollsion(Rectangle other) {
+		// SAT 
+		// find axes of each rectangle
+		vector<Point> axes = getAxes(other);
+		vector<Point> vertices1 = getVertices();
+		vector<Point> vertices2 = other.getVertices();
+
+		bool allAxesOverlap = false;
+		float minProjection1;
+		float maxProjection1;
+		float minProjection2;
+		float maxProjection2;
+
+		for (Point& axis : axes) {
+			minProjection1 = FLT_MAX;
+			maxProjection1 = 0;
+			minProjection2 = FLT_MAX;
+			maxProjection2 = 0;
+			//loop over points from first rectangle
+			for (Point& vertex1 : vertices1) {
+				if (axis.dotProduct(vertex1) < minProjection1)
+					minProjection1 = axis.dotProduct(vertex1);
+				if (axis.dotProduct(vertex1) > maxProjection1)
+					maxProjection1 = axis.dotProduct(vertex1);
+			}
+			// Second rectangle
+			for (Point& vertex2 : vertices2) {
+				if (axis.dotProduct(vertex2) < minProjection2)
+					minProjection2 = axis.dotProduct(vertex2);
+				if (axis.dotProduct(vertex2) > maxProjection2)
+					maxProjection2 = axis.dotProduct(vertex2);
+			}
+			// check overlap
+			allAxesOverlap = false;
+			if (minProjection1 < maxProjection2 && maxProjection1 > minProjection2) {
+				allAxesOverlap = true;
+			} else if (minProjection2 < maxProjection1 && maxProjection2 > minProjection1) {
+				allAxesOverlap = true;
+			}
+			else {
+				rectangleImage.setFillColor(sf::Color::Yellow);
+				return false;
+			}
+
+			// MTD Minimum translation distance
+		}
+		rectangleImage.setFillColor(sf::Color::Red);
+		return allAxesOverlap;
+	}
+
+	// preliminary collision test
+	bool isNearWall(float screenWidth, float screenHeight) {
+		if (xPosition - halfdiag <= 0 || xPosition + halfdiag >= screenWidth
+			|| yPosition - halfdiag <= 0 || yPosition + halfdiag >= screenHeight)
+			return true;
+		else
+			return false;
+	}
+
+
+	// handle collisions
+	void ResolveWallCollision(float screenWidth, float screenHeight) override {
+		//A B
+		//D C
+		vector<Point> vertices = getVertices();
+		float minX = FLT_MAX;
+		float minY = FLT_MAX;
+		float maxX = - FLT_MAX;
+		float maxY = - FLT_MAX;
+
+		// find min and max x and y.
+		for (Point& vertex : vertices) {
+			if (vertex.x < minX)
+				minX = vertex.x;
+			if (vertex.y < minY)
+				minY = vertex.y;
+			if (vertex.x > maxX)
+				maxX = vertex.x;
+			if (vertex.y > maxY)
+				maxY = vertex.y;
+		}
+		// left wall
+		if (minX <= 0 && xVelocity<0) {
+			flipxVelocity();
+			addxPosition(-minX);
+		} // right wall
+		 if (maxX >= screenWidth && xVelocity > 0) {
+			flipxVelocity();
+			addxPosition(screenWidth - maxX);
+		} // top wall
+		else if (minY <= 0 && yVelocity < 0) {
+			flipyVelocity();
+			addyPosition(-minY);
+		}// bottom wall
+		else if (maxY >= screenHeight && yVelocity > 0) {
+			flipyVelocity();
+			addyPosition(screenHeight - maxY);
+		}
+	}
+
+	// draw
+	void Draw(sf::RenderWindow& window) override {
 		rectangleImage.setPosition(sf::Vector2f(xPosition, yPosition));
 		rectangleImage.setRotation(angle);
 		window.draw(rectangleImage);

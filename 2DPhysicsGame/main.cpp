@@ -20,8 +20,8 @@ int main()
     // Class initializations
     Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
     CircleManager cman(screenWidth, screenHeight, deltaTime, window);
-    Rectangle rect(200, 300, 500, 500, 0, 0, 0, 0, 0, 0);
-    Rectangle rect2(200, 300, 500, 500, 0, 0, -90, 0, 0, 0);
+    Rectangle rect(100, 300, -5, 17, 0, 1, sf::Color::White, 200, 300, 0, -15, 0);
+    Rectangle rect2(900, 300, 100, -50, 1, 1, sf::Color::Green, 50, 100,45,10,0);
     sf::Font font;
 
     if (!font.loadFromFile(("C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame/sfml/VCR_OSD_MONO_1.001.ttf"))) { // C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame
@@ -106,9 +106,17 @@ int main()
         //cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
 
+        bool rectangleCollision;
+        if (rect.isNearRectangle(rect2))
+            rectangleCollision = rect.isRectangleCollsion(rect2);
+        if(rect.isNearWall(screenWidth, screenHeight))
+            rect.ResolveWallCollision(screenWidth, screenHeight);
+        if (rect2.isNearWall(screenWidth, screenHeight))
+            rect2.ResolveWallCollision(screenWidth, screenHeight);
+        rect.update(deltaTime);
+        rect2.update(deltaTime);
         rect.Draw(window);
         rect2.Draw(window);
-
         // output stats to sf window
         //cman.makeVelocityHistogram(30, 25);
 

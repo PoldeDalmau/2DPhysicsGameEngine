@@ -19,9 +19,17 @@ private:
     bool drawAll = false;
 
 public:
-    Car(float screenWidth, float screenHeight, const float deltaTime,
-        sf::RenderWindow& window, float radius, float Radius) : CircleManager(screenWidth, screenHeight,
-        deltaTime, window), radius(radius), Radius(Radius)/*, numCircles(0)*/
+    Car(
+        float screenWidth,
+        float screenHeight,
+        const float deltaTime,
+        sf::RenderWindow& window,
+        float radius, 
+        float Radius) : 
+        CircleManager(screenWidth, screenHeight, deltaTime, window),
+        radius(radius), 
+        Radius(Radius)
+        /*, numCircles(0)*/
     {
         initializeCar(100, 200);
     }

@@ -72,6 +72,10 @@ public:
 		angularVelocity += omegaZ;
 	}
 
+	void addAngle(float ang) {
+		angle += ang;
+	}
+
 	void addAngularAcceleration(float alphaZ) {
 		angularAcceleration += alphaZ;
 	}
@@ -126,9 +130,9 @@ public:
 
 		for (Point& axis : axes) {
 			minProjection1 = FLT_MAX;
-			maxProjection1 = 0;
+			maxProjection1 = -FLT_MAX;
 			minProjection2 = FLT_MAX;
-			maxProjection2 = 0;
+			maxProjection2 = -FLT_MAX;
 			//loop over points from first rectangle
 			for (Point& vertex1 : vertices1) {
 				if (axis.dotProduct(vertex1) < minProjection1)

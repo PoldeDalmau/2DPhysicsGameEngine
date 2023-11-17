@@ -8,7 +8,7 @@
 int main()
 {
     // Variable initializations
-    const float deltaTime = 0.01f;
+    const float deltaTime = 0.001f;
     float screenHeight = 720;
     float screenWidth = 1280;
     float marginWidth = 280; // margin to display real time stats
@@ -20,8 +20,8 @@ int main()
     // Class initializations
     Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
     CircleManager cman(screenWidth, screenHeight, deltaTime, window);
-    Rectangle rect(100, 300, -5, 17, 0, 1, sf::Color::White, 200, 300, 0, -15, 0);
-    Rectangle rect2(900, 300, 100, -50, 1, 1, sf::Color::Green, 50, 100,45,10,0);
+    Rectangle rect(100, 300, 0, 0, 0, 1, sf::Color::White, 100, 100, 0, 0, 0);
+    Rectangle rect2(200, 300, 0, 0, 1, 1, sf::Color::Green, 10, 300,45,25,0);
     sf::Font font;
 
     if (!font.loadFromFile(("C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame/sfml/VCR_OSD_MONO_1.001.ttf"))) { // C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame
@@ -36,11 +36,6 @@ int main()
     sf::Clock clock;
     sf::Time elapsed2 = clock.getElapsedTime();
 
-    //// rectangle that represents moving wall
-    //sf::RectangleShape rectangle(sf::Vector2f(1, screenHeight));
-    //rectangle.setFillColor(sf::Color::White);
-    //rectangle.setPosition(sf::Vector2f(wallxPosition, 0));
-    //int moveSpeed = 100;
     //
     //int numRowsMSS = 3;
     //int numColsMSS = 3;
@@ -63,28 +58,25 @@ int main()
             else if (event.type == sf::Event::KeyPressed) {
                 ////spin wheel
                 if (event.key.code == sf::Keyboard::D)
-                    car.turnWheel(-1);
+                    rect.addxPosition(5);
+                    //car.turnWheel(-1);
                 if (event.key.code == sf::Keyboard::A)
-                    car.turnWheel(1);
+                    rect.addxPosition(-5);
+                    //car.turnWheel(1);
+                if (event.key.code == sf::Keyboard::S)
+                    rect.addyPosition(5);
+                if (event.key.code == sf::Keyboard::W)
+                    rect.addyPosition(-5);
+                if (event.key.code == sf::Keyboard::Q)
+                    rect.addAngle(-5);
+                if (event.key.code == sf::Keyboard::E)
+                    rect.addAngle(5);
+
                 if (event.key.code == sf::Keyboard::Space)
                     car.jump();
                 if (event.key.code == sf::Keyboard::V)
                     car.drawSprings();
 
-
-            //    Allows to move wall
-            //    if (event.key.code == sf::Keyboard::A) {
-            //        // Move the rectangle left
-            //        rectangle.move(-moveSpeed * deltaTime, 0.0f);
-            //        wallxPosition -= moveSpeed * deltaTime;
-            //        wallxVelocity = -moveSpeed;
-            //    }
-            //    else if (event.key.code == sf::Keyboard::D) {
-            //        // Move the rectangle right
-            //        rectangle.move(moveSpeed * deltaTime, 0.0f);
-            //        wallxPosition += moveSpeed * deltaTime;
-            //        wallxVelocity = moveSpeed;
-            //    }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                     window.close();
             }
@@ -113,6 +105,7 @@ int main()
             rect.ResolveWallCollision(screenWidth, screenHeight);
         if (rect2.isNearWall(screenWidth, screenHeight))
             rect2.ResolveWallCollision(screenWidth, screenHeight);
+
         rect.update(deltaTime);
         rect2.update(deltaTime);
         rect.Draw(window);

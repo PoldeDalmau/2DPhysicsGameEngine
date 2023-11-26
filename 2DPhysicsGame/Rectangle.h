@@ -115,12 +115,14 @@ public:
 		}
 
 	}
-	bool isRectangleCollsion(Rectangle other) {
+	void isRectangleCollsion(Rectangle &other) {
 		// SAT 
 		// find axes of each rectangle
 		vector<Point> axes = getAxes(other);
 		vector<Point> vertices1 = getVertices();
 		vector<Point> vertices2 = other.getVertices();
+		Point mtv; // minimum translation vector
+		float penetrationDepth = FLT_MAX;
 
 		bool allAxesOverlap = false;
 		float minProjection1;
@@ -151,18 +153,36 @@ public:
 			allAxesOverlap = false;
 			if (minProjection1 < maxProjection2 && maxProjection1 > minProjection2) {
 				allAxesOverlap = true;
-			} else if (minProjection2 < maxProjection1 && maxProjection2 > minProjection1) {
-				allAxesOverlap = true;
-			}
-			else {
+				float tempDepth1 = abs(maxProjection1 - minProjection2);
+				float tempDepth2 = abs(maxProjection2 - minProjection1);
+				float tempDepth = tempDepth1 < tempDepth2 ? tempDepth1 : tempDepth2;
+
+				if (penetrationDepth > tempDepth)	{
+					penetrationDepth = tempDepth;
+					mtv = axis;
+
+					/*mtv.x = -axis.y * penetrationDepth;
+					mtv.y = axis.x * penetrationDepth;*/
+				}
+			}else {
 				rectangleImage.setFillColor(sf::Color::Yellow);
-				return false;
+				return;
 			}
 
-			// MTD Minimum translation distance
 		}
 		rectangleImage.setFillColor(sf::Color::Red);
-		return allAxesOverlap;
+		// MTV Minimum Translation Vector
+		// figure out the sign first
+		float sign = -1;
+		Point thisPos(this->xPosition, this->yPosition);
+		Point otherPos(other.xPosition, other.yPosition);
+		Point dist = otherPos - thisPos;
+		if (mtv.dotProduct(dist) < 0)
+			sign = 1;
+		this->addxPosition(0.5 * sign * mtv.x);
+		this->addyPosition(0.5 * sign * mtv.y);
+		other.addxPosition(-0.5 * sign * mtv.x);
+		other.addyPosition(-0.5 * sign * mtv.y);
 	}
 
 	// preliminary collision test

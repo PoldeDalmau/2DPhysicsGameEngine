@@ -21,7 +21,7 @@ int main()
     Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
     CircleManager cman(screenWidth, screenHeight, deltaTime, window);
     Rectangle rect(100, 300, 0, 0, 0, 1, sf::Color::White, 100, 100, 0, 0, 0);
-    Rectangle rect2(200, 300, 0, 0, 1, 1, sf::Color::Green, 10, 300,45,25,0);
+    Rectangle rect2(200, 300, 0, 0, 1, 1, sf::Color::Green, 10, 300,0/*45*/,0,0);
     sf::Font font;
 
     if (!font.loadFromFile(("C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame/sfml/VCR_OSD_MONO_1.001.ttf"))) { // C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame
@@ -100,7 +100,7 @@ int main()
 
         bool rectangleCollision;
         if (rect.isNearRectangle(rect2))
-            rectangleCollision = rect.isRectangleCollsion(rect2);
+            rect.isRectangleCollsion(rect2);
         if(rect.isNearWall(screenWidth, screenHeight))
             rect.ResolveWallCollision(screenWidth, screenHeight);
         if (rect2.isNearWall(screenWidth, screenHeight))

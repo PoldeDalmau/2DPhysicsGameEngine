@@ -10,6 +10,7 @@ public:
 	int index;
 	float xPosition;
 	float yPosition;
+	//Point position;
 	float xVelocity;
 	float yVelocity;
 	float xAcceleration = 0;
@@ -102,6 +103,9 @@ public:
 	void addyPosition(float y) {
 		yPosition += y;
 	}
+
+
+
 	void addxVelocity(float vx) {
 		xVelocity += vx;
 	}
@@ -151,6 +155,13 @@ struct Point {
 		Point result;
 		result.x = this->x - other.x;
 		result.y = this->y - other.y;
+		return result;
+	}
+
+	Point operator * (const float scalar) {
+		Point result;
+		result.x = this->x * scalar;
+		result.y = this->y * scalar;
 		return result;
 	}
 

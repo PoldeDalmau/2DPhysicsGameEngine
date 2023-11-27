@@ -9,35 +9,29 @@ public:
 	float rectangleWidth;
 	float angle;
 	float angularVelocity;
-	float angularAcceleration;
 	sf::RectangleShape rectangleImage;
 	float halfdiag;
-	float oldXAcceleration = 0;
-	float oldYAcceleration = 0;
-	int numAxes = 2; // rectangles have two axes
+	//int numAxes = 2; // rectangles have two axes
 	Point vertexA, vertexB, vertexC, vertexD; // shape vertices
+	float angularAcceleration = 0;
 	Rectangle(
-		float xPosition,
-		float yPosition,
-		float xVelocity,
-		float yVelocity,
+		Point position,
+		Point velocity,
 		int index,
 		float mass,
 		sf::Color color,
 		float rectangleHeight, 
 		float rectangleWidth, 
 		float angle,
-		float angularVelocity, 
-		float angularAcceleration = 0)
+		float angularVelocity)
 		: 
-		Shape(xPosition, yPosition, xVelocity, yVelocity, index, mass, color),
+		Shape(position, velocity, index, mass, color),
 		rectangleHeight(rectangleHeight), 
 		rectangleWidth(rectangleWidth), 
 		angle(angle),
-		angularVelocity(angularVelocity), 
-		angularAcceleration(angularAcceleration)
+		angularVelocity(angularVelocity)
 	{
-		halfdiag = 0.5 * sqrt(float(rectangleHeight) * rectangleHeight + rectangleWidth * rectangleWidth);
+		halfdiag = 0.5 * sqrt(rectangleHeight * rectangleHeight + rectangleWidth * rectangleWidth);
 		rectangleImage = sf::RectangleShape(sf::Vector2f(rectangleWidth, rectangleHeight));
 		rectangleImage.setFillColor(color);
 		rectangleImage.setOrigin(sf::Vector2f(rectangleWidth/2,rectangleHeight/2));
@@ -52,10 +46,10 @@ public:
 
 	vector<Point> getVertices() {
 		vector<Point> vertices(4);
-		vertices[0] = rotate(vertexA) + Point(xPosition, yPosition);
-		vertices[1] = rotate(vertexB) + Point(xPosition, yPosition);
-		vertices[2] = rotate(vertexC) + Point(xPosition, yPosition);
-		vertices[3] = rotate(vertexD) + Point(xPosition, yPosition);
+		vertices[0] = rotate(vertexA) + position;
+		vertices[1] = rotate(vertexB) + position;
+		vertices[2] = rotate(vertexC) + position;
+		vertices[3] = rotate(vertexD) + position;
 		return vertices;
 	}
 
@@ -102,9 +96,8 @@ public:
 		float pseudoRadius = halfdiag;
 		float pseudoRadius2 = other.halfdiag;
 
-		float distanceX = other.getxPosition() - xPosition;
-		float distanceY = other.getyPosition() - yPosition;
-		float distanceSquared = sqrt(distanceX * distanceX + distanceY * distanceY);
+		Point separationVector = other.position - this->position;
+		float distanceSquared = sqrt(separationVector.x * separationVector.x + separationVector.y * separationVector.y);
 
 		if (distanceSquared <= pseudoRadius+ pseudoRadius2){
 			return true;
@@ -159,10 +152,7 @@ public:
 
 				if (penetrationDepth > tempDepth)	{
 					penetrationDepth = tempDepth;
-					mtv = axis;
-
-					/*mtv.x = -axis.y * penetrationDepth;
-					mtv.y = axis.x * penetrationDepth;*/
+					mtv = axis * penetrationDepth;
 				}
 			}else {
 				rectangleImage.setFillColor(sf::Color::Yellow);
@@ -172,23 +162,22 @@ public:
 		}
 		rectangleImage.setFillColor(sf::Color::Red);
 		// MTV Minimum Translation Vector
-		// figure out the sign first
+		// figure out the sign first (always away from the other object)
 		float sign = -1;
-		Point thisPos(this->xPosition, this->yPosition);
-		Point otherPos(other.xPosition, other.yPosition);
+		Point thisPos(position);
+		Point otherPos(other.position);
 		Point dist = otherPos - thisPos;
 		if (mtv.dotProduct(dist) < 0)
 			sign = 1;
-		this->addxPosition(0.5 * sign * mtv.x);
-		this->addyPosition(0.5 * sign * mtv.y);
-		other.addxPosition(-0.5 * sign * mtv.x);
-		other.addyPosition(-0.5 * sign * mtv.y);
+
+		this->position += mtv * 0.5 * sign;
+		other.position += mtv * 0.5 * (-sign);
 	}
 
 	// preliminary collision test
 	bool isNearWall(float screenWidth, float screenHeight) {
-		if (xPosition - halfdiag <= 0 || xPosition + halfdiag >= screenWidth
-			|| yPosition - halfdiag <= 0 || yPosition + halfdiag >= screenHeight)
+		if (position.x - halfdiag <= 0 || position.x + halfdiag >= screenWidth
+			|| position.y - halfdiag <= 0 || position.y + halfdiag >= screenHeight)
 			return true;
 		else
 			return false;
@@ -217,19 +206,19 @@ public:
 				maxY = vertex.y;
 		}
 		// left wall
-		if (minX <= 0 && xVelocity<0) {
+		if (minX <= 0 && velocity.x<0) {
 			flipxVelocity();
 			addxPosition(-minX);
 		} // right wall
-		 if (maxX >= screenWidth && xVelocity > 0) {
+		 if (maxX >= screenWidth && velocity.x > 0) {
 			flipxVelocity();
 			addxPosition(screenWidth - maxX);
 		} // top wall
-		else if (minY <= 0 && yVelocity < 0) {
+		else if (minY <= 0 && velocity.y < 0) {
 			flipyVelocity();
 			addyPosition(-minY);
 		}// bottom wall
-		else if (maxY >= screenHeight && yVelocity > 0) {
+		else if (maxY >= screenHeight && velocity.y > 0) {
 			flipyVelocity();
 			addyPosition(screenHeight - maxY);
 		}
@@ -237,7 +226,7 @@ public:
 
 	// draw
 	void Draw(sf::RenderWindow& window) override {
-		rectangleImage.setPosition(sf::Vector2f(xPosition, yPosition));
+		rectangleImage.setPosition(sf::Vector2f(position.x, position.y));
 		rectangleImage.setRotation(angle);
 		window.draw(rectangleImage);
 	}

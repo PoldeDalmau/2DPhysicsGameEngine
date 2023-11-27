@@ -1,40 +1,28 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-
+#include "Point.h"
 
 class Shape {
-private:
-
-
 public:
+	Point position;
+	Point velocity;
+	Point acceleration = Point(0, 0);
 	int index;
-	float xPosition;
-	float yPosition;
-	//Point position;
-	float xVelocity;
-	float yVelocity;
-	float xAcceleration = 0;
-	float yAcceleration = 0;
 	float mass;
 	sf::Color color;
-	float oldXAcceleration = 0;
-	float oldYAcceleration = 0;
+	Point oldAcceleration = Point(0,0);
 
 	Shape(
-		float xPosition, 
-		float yPosition, 
-		float xVelocity, 
-		float yVelocity,
+		Point position,
+		Point velocity,
 		int index, 
 		float mass = 1, 
 		sf::Color color = sf::Color::White)
 		:
-		index(index),
-		xPosition(xPosition),
-		yPosition(yPosition),
-		xVelocity(xVelocity),
-		yVelocity(yVelocity), 
+		position(position),
+		velocity(velocity),
 		mass(mass), 
+		index(index),
 		color(color) 
 	{
 	}
@@ -43,18 +31,26 @@ public:
 	int getIndex() {
 		return index;
 	}
-	float getxPosition() {
-		return xPosition;
-	}
-	float getyPosition() {
-		return yPosition;
+	//float getxPosition() {
+	//	return xPosition;
+	//}
+	//float getyPosition() {
+	//	return yPosition;
+	//}
+
+	Point getPosition() {
+		return position;
 	}
 
-	float getxVelocity() {
-		return xVelocity;
-	}
-	float getyVelocity() {
-		return yVelocity;
+	//float getxVelocity() {
+	//	return xVelocity;
+	//}
+	//float getyVelocity() {
+	//	return yVelocity;
+	//}
+
+	Point getVelocity() {
+		return velocity;
 	}
 
 	float getMass() {
@@ -63,8 +59,9 @@ public:
 
 	// Updates position given a velocity using Euler integration:
 	void updatePositionEuler(const float deltaTime) {
-		xPosition += xVelocity * deltaTime;
-		yPosition += yVelocity * deltaTime;
+		//xPosition += xVelocity * deltaTime;
+		//yPosition += yVelocity * deltaTime;
+		position += velocity * deltaTime;
 	}
 
 
@@ -72,58 +69,66 @@ public:
 	// pending: not actually using the correct method
 	// Acceleration is calculated from old position -> should be new position
 	void updatePostionVerlet(const float deltaTime) {
-		float oldXPosition = xPosition;
-		float oldYPosition = yPosition;
-		float oldXVelocity = xVelocity;
-		float oldYVelocity = yVelocity;
-		xPosition += oldXVelocity * deltaTime + oldXAcceleration * deltaTime * deltaTime;
-		yPosition += oldYVelocity * deltaTime + oldYAcceleration * deltaTime * deltaTime;
+		Point oldPos = position;
+		Point oldVel = velocity;
+		//float oldXPosition = xPosition;
+		//float oldYPosition = yPosition;
+		//float oldXVelocity = xVelocity;
+		//float oldYVelocity = yVelocity;
+		//xPosition += oldXVelocity * deltaTime + oldXAcceleration * deltaTime * deltaTime;
+		//yPosition += oldYVelocity * deltaTime + oldYAcceleration * deltaTime * deltaTime;
+		position += oldVel * deltaTime + oldAcceleration * deltaTime * deltaTime;
 
-
-		xVelocity += (oldXAcceleration + xAcceleration) / 2 * deltaTime;
-		yVelocity += (oldYAcceleration + yAcceleration) / 2 * deltaTime;
-
+		//xVelocity += (oldXAcceleration + xAcceleration) / 2 * deltaTime;
+		//yVelocity += (oldYAcceleration + yAcceleration) / 2 * deltaTime;
+		velocity += (oldAcceleration + acceleration) * 0.5 * deltaTime;
 		// update/ reset accelerations
-		oldXAcceleration = xAcceleration;
-		oldYAcceleration = yAcceleration;
-		xAcceleration = 0;
-		yAcceleration = 0;
+		oldAcceleration = acceleration;
+		//oldXAcceleration = xAcceleration;
+		//oldYAcceleration = yAcceleration;
+		acceleration = Point(0, 0);
+		//xAcceleration = 0;
+		//yAcceleration = 0;
 	}
 
 	// Sets
-	void setX(float x) {
-		xPosition = x;
-	}
-	void setY(float y) {
-		yPosition = y;
-	}
+	//void setX(float x) {
+	//	xPosition = x;
+	//}
+	//void setY(float y) {
+	//	yPosition = y;
+	//}
 	void addxPosition(float x) {
-		xPosition += x;
+		position.x += x;
 	}
 	void addyPosition(float y) {
-		yPosition += y;
+		position.y += y;
 	}
 
-
-
-	void addxVelocity(float vx) {
-		xVelocity += vx;
+	void addPosition(Point p) {
+		this->position += p;
 	}
-	void addyVelocity(float vy) {
-		yVelocity += vy;
-	}
+
+	//void addxVelocity(float vx) {
+	//	xVelocity += vx;
+	//}
+	//void addyVelocity(float vy) {
+	//	yVelocity += vy;
+	//}
 	void flipxVelocity() {
-		xVelocity *= -1;
+		//xVelocity *= -1;
+		velocity.x *= -1;
 	}
 	void flipyVelocity() {
-		yVelocity *= -1;
+		//yVelocity *= -1;
+		velocity.y *= -1;
 	}
-	void addxAcceleration(float ax) {
-		xAcceleration += ax;
-	}
-	void addyAcceleration(float ay) {
-		yAcceleration += ay;
-	}
+	//void addxAcceleration(float ax) {
+	//	xAcceleration += ax;
+	//}
+	//void addyAcceleration(float ay) {
+	//	yAcceleration += ay;
+	//}
 
 	// Handle Collisions
 	virtual void ResolveWallCollision(float screenWidth, float screenHeight) {};
@@ -133,39 +138,3 @@ public:
 	virtual void Draw(sf::RenderWindow& window) {};
 };
 
-
-struct Point {
-	float x;
-	float y;
-	Point() {
-	}
-	Point(float X, float Y) {
-		x = X;
-		y = Y;
-	}
-
-	Point operator + (const Point& other) {
-		Point result;
-		result.x = this->x + other.x;
-		result.y = this->y + other.y;
-		return result;
-	}
-
-	Point operator - (const Point& other) {
-		Point result;
-		result.x = this->x - other.x;
-		result.y = this->y - other.y;
-		return result;
-	}
-
-	Point operator * (const float scalar) {
-		Point result;
-		result.x = this->x * scalar;
-		result.y = this->y * scalar;
-		return result;
-	}
-
-	float dotProduct(Point other) {
-		return (this->x * other.x + this->y * other.y);
-	}
-};

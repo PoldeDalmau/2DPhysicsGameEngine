@@ -3,6 +3,7 @@
 #include "CircleManager.h"
 #include "Car.h"
 #include "Rectangle.h"
+#include "Shape.h"
 #include <iostream>
 
 int main()
@@ -20,8 +21,8 @@ int main()
     // Class initializations
     Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
     CircleManager cman(screenWidth, screenHeight, deltaTime, window);
-    Rectangle rect(100, 300, 0, 0, 0, 1, sf::Color::White, 100, 100, 0, 0, 0);
-    Rectangle rect2(200, 300, 0, 0, 1, 1, sf::Color::Green, 10, 300,0/*45*/,0,0);
+    Rectangle rect(Point(100, 300), Point(0, 0), 0, 1, sf::Color::White, 100, 100, 0, 0);
+    Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Green, 10, 300,0/*45*/,0);
     sf::Font font;
 
     if (!font.loadFromFile(("C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame/sfml/VCR_OSD_MONO_1.001.ttf"))) { // C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame

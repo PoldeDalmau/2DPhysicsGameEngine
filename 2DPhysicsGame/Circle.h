@@ -1,22 +1,18 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Shape.h"
 
-class Circle {
-private:
-	int index;
-	float radius;
-	float xPosition;
-	float yPosition;
-	float xVelocity;
-	float yVelocity;
-	float xAcceleration = 0;
-	float yAcceleration = 0;
-	float mass;
-	sf::Color color;
-
+class Circle : public Shape{
 public:
-	float oldXAcceleration = 0;
-	float oldYAcceleration = 0;
+	//int index;
+	float radius;
+	//Point position;	
+	//Point velocity;
+	//Point acceleration;
+	//float mass;
+	//sf::Color color;
+
+	Point oldAcceleration = Point(0, 0);
 	/// <summary>
 	/// 
 	/// </summary>
@@ -26,114 +22,35 @@ public:
 	/// <param name="xVelocity"></param>
 	/// <param name="yVelocity"></param>
 	/// <param name="color"></param>
-	Circle(float radius, float xPosition, float yPosition, float xVelocity, float yVelocity,
-		int index, float mass = 1, sf::Color color = sf::Color::White)
+	Circle(int index, 
+		float radius, 
+		Point position, 
+		Point velocity,
+		float mass = 1,
+		sf::Color color = sf::Color::White)
 		: 
-		index(index), radius(radius), xPosition(xPosition), yPosition(yPosition), xVelocity(xVelocity),
-		yVelocity(yVelocity), mass(mass), color(color) {
-	}
+		Shape(position, velocity, index, mass, color), 
+		radius(radius)
+	{}
 
 
 
 	// Gets
-	int getIndex() {
-		return index;
-	}
 	float getRadius() {
 		return radius;
 	}
-	float getxPosition() {
-		return xPosition;
-	}
-	float getyPosition() {
-		return yPosition;
-	}
 
-	float getxVelocity() {
-		return xVelocity;
-	}
-	float getyVelocity() {
-		return yVelocity;
-	}
-
-	float getMass() {
-		return mass;
-	}
-
-	// Updates position given a velocity using Euler integration:
-	void updatePositionEuler(const float deltaTime) {
-		xPosition += xVelocity * deltaTime;
-		yPosition += yVelocity * deltaTime;
-	}
-
-
-	// Updates position given an initial position, velocity and acceleration using the Velocity Verlet integrator:
-	// pending: not actually using the correct method
-	// Acceleration is calculated from old position -> should be new position
-	void updatePostionVerlet(const float deltaTime) {
-		float oldXPosition = xPosition;
-		float oldYPosition = yPosition;
-		float oldXVelocity = xVelocity;
-		float oldYVelocity = yVelocity;
-		oldXAcceleration = xAcceleration;
-		oldYAcceleration = yAcceleration;
-		xPosition += oldXVelocity * deltaTime + oldXAcceleration * deltaTime * deltaTime;
-		yPosition += oldYVelocity * deltaTime + oldYAcceleration * deltaTime * deltaTime;
-
-		// update accelerations
-
-		xVelocity += (oldXAcceleration + xAcceleration) / 2 * deltaTime;
-		yVelocity += (oldYAcceleration + yAcceleration) / 2 * deltaTime;
-
-		oldXAcceleration = xAcceleration;
-		oldYAcceleration = yAcceleration;
-		//xAcceleration = 0;
-		//yAcceleration = 0;
-	}
-
-	// Sets
-	void setX(float x) {
-		xPosition = x;
-	}
-	void setY(float y) {
-		yPosition = y;
-	}
-	void addxPosition(float x) {
-		xPosition += x;
-	}
-	void addyPosition(float y) {
-		yPosition += y;
-	}
-	void addxVelocity(float vx) {
-		xVelocity += vx;
-	}
-	void addyVelocity(float vy) {
-		yVelocity += vy;
-	}
-	void flipxVelocity() {
-		xVelocity *= -1;
-	}
-	void flipyVelocity() {
-		yVelocity *= -1;
-	}
-	void addxAcceleration(float ax) {
-		xAcceleration += ax;
-	}
-	void addyAcceleration(float ay) {
-		yAcceleration += ay;
-	}
-	
 	// Get distance between this circle and otherCircle
 	float getDistance(Circle otherCircle) {
-		float distanceX = otherCircle.getxPosition() - xPosition;
-		float distanceY = otherCircle.getyPosition() - yPosition;
+		float distanceX = otherCircle.position.x - position.x;
+		float distanceY = otherCircle.position.y - position.y;
 		return std::sqrt(distanceX * distanceX + distanceY * distanceY);
 	}
 
 	// Handle Collisions
 	bool CheckCircleCircleCollision(Circle& otherCircle) {
-		float distanceX = otherCircle.getxPosition() - xPosition;
-		float distanceY = otherCircle.getyPosition() - yPosition;
+		float distanceX = otherCircle.position.x - position.x;
+		float distanceY = otherCircle.position.y - position.y;
 		float distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
 		float sumOfRadii = radius + otherCircle.getRadius();
@@ -145,8 +62,8 @@ public:
 	// first, checks displaces circles if they are overlapping by half of the the overlap for each. Then, assuming equal mass, it resolves the collision with momentum and energy conservation.
 	void ResolveCircleCircleCollision(Circle& othercircle) {
 		//first, move circles out of overlap:
-		float distanceX = othercircle.getxPosition() - xPosition;
-		float distanceY = othercircle.getyPosition() - yPosition;
+		float distanceX = othercircle.position.x - position.x;
+		float distanceY = othercircle.position.y - position.y;
 		float distanceMagnitude = (*this).getDistance(othercircle);
 		float overlap = (radius + othercircle.getRadius()) - distanceMagnitude;
 
@@ -175,54 +92,55 @@ public:
 		float normalX = distanceX / distanceMagnitude;
 		float normalY = distanceY / distanceMagnitude;
 
-		float relativeVelocityX = othercircle.getxVelocity() - (*this).getxVelocity();
-		float relativeVelocityY = othercircle.getyVelocity() - (*this).getyVelocity();
+		float relativeVelocityX = othercircle.velocity.x - velocity.x;
+		float relativeVelocityY = othercircle.velocity.y - velocity.y;
 
 		float dotProduct = relativeVelocityX * normalX + relativeVelocityY * normalY;
 
-		float impulse = (2.0f * dotProduct) / ((*this).getMass() + othercircle.getMass()); // Assuming equal masses
+		float impulse = (2.0f * dotProduct) / ((*this).getMass() + othercircle.getMass());
 
-		(*this).addxVelocity(impulse * othercircle.getMass() * normalX);
-		(*this).addyVelocity(impulse * othercircle.getMass() * normalY);
+		float vx = impulse * othercircle.getMass() * normalX;
+		float vy =impulse * othercircle.getMass() * normalY;
+		Point dv(vx, vy);
+		velocity += dv;
+		othercircle.velocity += dv * (-1);
 
-		othercircle.addxVelocity(-impulse * (*this).getMass() * normalX);
-		othercircle.addyVelocity(-impulse * (*this).getMass() * normalY);
 	}
-	void ResolveCircleWallCollision(float screenWidth, float screenHeight, float wallxPosition, float wallxVelocity, bool& contact) {
-		if (xPosition < radius) {
-			(*this).setX(radius);
+	void ResolveWallCollision(float screenWidth, float screenHeight/*, float wallxVelocity*//*, bool& contact*/) override {
+		if (position.x < radius) {
+			position.x = radius;
+			flipxVelocity();
+		}
+		else if (position.x + radius > screenWidth) {
+			position.x = (screenWidth - radius); // something looks wrong here 
 			(*this).flipxVelocity();
-		}
-		else if (xPosition + radius > wallxPosition) {
-			(*this).setX(screenWidth - radius); // something looks wrong here 
-			(*this).flipxVelocity();
-			(*this).addxVelocity(wallxVelocity);
+			//(*this).addxVelocity(wallxVelocity);
 		}
 
 
-		if (yPosition <= radius) {
+		if (position.y <= radius) {
 			(*this).flipyVelocity();
-			(*this).setY(radius);
+			position.y = (radius);
 		}
-		else if (yPosition + radius > screenHeight) {
+		else if (position.y + radius > screenHeight) {
 			(*this).flipyVelocity();
-			(*this).setY(screenHeight - radius);
-			contact = true;
+			position.y = (screenHeight - radius);
+			//contact = true;
 		}
 	}
 
-	void circleFriction(float screenHeight) {
-		float range = 0.1;
-		float frictionCoefficient = 0.70; // fraction of speed lost for being in contact with the ground
-		if (yPosition > screenHeight - (radius + range)) {
-			(*this).addxVelocity(-getxVelocity() * frictionCoefficient);
-		}
-	}
+	//void circleFriction(float screenHeight) {
+	//	float range = 0.1;
+	//	float frictionCoefficient = 0.70; // fraction of speed lost for being in contact with the ground
+	//	if (position.y > screenHeight - (radius + range)) {
+	//		(*this).addxVelocity(-velocity.y * frictionCoefficient);
+	//	}
+	//}
 
 	void Draw(sf::RenderWindow& window) {
 		sf::CircleShape circleimage(radius);
 		circleimage.setFillColor(color);
-		circleimage.setPosition(sf::Vector2f(xPosition - radius, yPosition - radius));
+		circleimage.setPosition(sf::Vector2f(position.x - radius, position.y - radius));
 		window.draw(circleimage);
 	}
 };

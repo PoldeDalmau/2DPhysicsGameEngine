@@ -48,7 +48,7 @@ public:
         float yPos = screenHeight - 4 * radius * numCirclesColumn;
         for (int i = 0; i < numCirclesRow; i++)
             for (int j = 0; j < numCirclesColumn; j++) {
-                AddCircle(Circle(radius, xPos + i * latticeConstant, yPos + j * latticeConstant, j * 0.1, 0, numCircles, particleMass, sf::Color::Blue));
+                AddCircle(Circle(numCircles, radius, Point(xPos + i * latticeConstant, yPos + j * latticeConstant), Point(0, 0), particleMass, sf::Color::Blue));
             }
     }
 
@@ -158,17 +158,17 @@ public:
             float vy = 0;
             //float vx = -100 + 5*numx;
             //float vy = 100 - 5*numx;
-            AddCircle(Circle(radius, x, y, vx, vy, numCircles));
+            AddCircle(Circle(numCircles, radius, Point(x, y), Point(vx, vy)));
         }
         // make one circle to hit all the circles;
-        AddCircle(Circle(radius, screenWidth / 2.0f + radius, screenHeight - radius, 100, -100, numCircles, 1, sf::Color::Red));
+        AddCircle(Circle(numCircles, radius, Point(screenWidth / 2.0f + radius, screenHeight - radius), Point(100, -100), 1, sf::Color::Red));
     }
 
     // gravity
     // g: acceleration
     void Gravity(float g) {
         for (Circle & circle : circles){
-            circle.addyAcceleration(g); // down is up in sfml
+            circle.acceleration.y += (g); // down is up in sfml
         }
 
     }
@@ -177,9 +177,9 @@ public:
     {// draw vertices
         sf::VertexArray line(sf::Lines, 2);
         line[0].color = sf::Color::White;
-        line[0].position = sf::Vector2f(circles[startIndex].getxPosition(), circles[startIndex].getyPosition());
+        line[0].position = sf::Vector2f(circles[startIndex].position.x, circles[startIndex].position.y);
         line[1].color = sf::Color::White;
-        line[1].position = sf::Vector2f(circles[endIndex].getxPosition(), circles[endIndex].getyPosition());
+        line[1].position = sf::Vector2f(circles[endIndex].position.x, circles[endIndex].position.y);
         window.draw(line);
     }
     // Binds two circles via a harmonic potential. 
@@ -194,8 +194,8 @@ public:
         assert(circle2Index < circles.size(), "circle index out of bounds");
 
         float distance = circles[circle1Index].getDistance(circles[circle2Index]);
-        float normX = (circles[circle2Index].getxPosition() - circles[circle1Index].getxPosition()) / distance;
-        float normY = (circles[circle2Index].getyPosition() - circles[circle1Index].getyPosition()) / distance;
+        float normX = (circles[circle2Index].position.x - circles[circle1Index].position.x) / distance;
+        float normY = (circles[circle2Index].position.y - circles[circle1Index].position.y) / distance;
         float displacement = (distance - eqDistance)/2;
 
         float xDisp = normX * displacement;
@@ -218,20 +218,19 @@ public:
             drawLine(circle1Index, circle2Index);
 
         float distance = circles[circle1Index].getDistance(circles[circle2Index]);
-        float distanceX = circles[circle2Index].getxPosition() - circles[circle1Index].getxPosition();
-        float distanceY = circles[circle2Index].getyPosition() - circles[circle1Index].getyPosition();
-        float relativeVelocityX = circles[circle2Index].getxVelocity() - circles[circle1Index].getxVelocity();
-        float relativeVelocityY = circles[circle2Index].getxVelocity() - circles[circle1Index].getxVelocity();
+        float distanceX = circles[circle2Index].position.x - circles[circle1Index].position.x;
+        float distanceY = circles[circle2Index].position.y - circles[circle1Index].position.y;
+        float relativeVelocityX = circles[circle2Index].velocity.x - circles[circle1Index].velocity.x;
+        float relativeVelocityY = circles[circle2Index].velocity.y - circles[circle1Index].velocity.y;
         // Hook's Law
         // harmonic potential around the equilibrium distance eqDistance
         //float damping = 0.05;
         float forceX = distanceX/distance * (k * (distance - eqDistance) + damping * relativeVelocityX * distanceX / distance);
         float forceY = distanceY/distance * (k * (distance - eqDistance) + damping * relativeVelocityY * distanceY / distance);
+        Point acceleration(forceX, forceY);
         // Update velocities according to Hook
-        circles[circle1Index].addxAcceleration(forceX / circles[circle1Index].getMass());
-        circles[circle1Index].addyAcceleration(forceY / circles[circle1Index].getMass());
-        circles[circle2Index].addxAcceleration(- forceX / circles[circle2Index].getMass());
-        circles[circle2Index].addyAcceleration(- forceY / circles[circle2Index].getMass());
+        circles[circle1Index].acceleration += acceleration * (1 / circles[circle1Index].getMass());
+        circles[circle1Index].acceleration += acceleration * (- 1 / circles[circle1Index].getMass());
 
 
     }
@@ -241,14 +240,14 @@ public:
             //if(circle.getIndex() != 4)
             //circle.updatePositionEuler(deltaTime);
             circle.updatePostionVerlet(deltaTime);
-            circle.circleFriction(screenHeight);
+            //circle.circleFriction(screenHeight);
         }
         CheckCollisionsAndResolve(canJump);
     }
     void CheckCollisionsAndResolve(bool& canJump) {
         bool contact = false;
         for (int i = 0; i < circles.size(); i++) {
-            circles[i].ResolveCircleWallCollision(screenWidth, screenHeight, screenWidth, 0, contact);
+            circles[i].ResolveWallCollision(screenWidth, screenHeight/*, screenWidth, contact*/);
             //for (int j = i + 1; j < circles.size(); j++) {
             //    if (circles[i].CheckCircleCircleCollision(circles[j]))
             //        circles[i].ResolveCircleCircleCollision(circles[j]);
@@ -276,7 +275,7 @@ public:
 
         for (Circle& circ : circles)
             if (circ.getIndex() > 9){ // change hardcoded 9 to size of mass spring system
-                particleEnergy = circ.getxVelocity() * circ.getxVelocity() + circ.getyVelocity() * circ.getyVelocity();
+                particleEnergy = circ.velocity.x * circ.velocity.x + circ.velocity.y * circ.velocity.y;
                 internalEnergy += particleEnergy;
                 velocityDistribution[circle_index] = sqrt(particleEnergy);
                 circle_index++;

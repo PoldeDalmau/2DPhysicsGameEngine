@@ -1,6 +1,7 @@
 #pragma once
 //#include "Circle.h"
 #include "CircleManager.h"
+#include "Point.h"
 #include <vector>
 #include <cassert>
 
@@ -42,25 +43,25 @@ public:
         float adjacentCircleDistance = 2 * Radius * sin(angle / 2);
 
         // first wheel
-        AddCircle(Circle(radius * 0.1, xPosition, yPosition, 0, 0, numCircles, 1, sf::Color::Red));
+        AddCircle(Circle(numCircles, radius * 0.1, Point(xPosition, yPosition),Point( 0, 0), 1, sf::Color::Red));
         for (int i = 0; i < numPointsOnWheel; i++) {
             relativexPosition = Radius * (cos(angle * i));
             relativeyPosition = Radius * (sin(angle * i));
-            AddCircle(Circle(radius, xPosition + relativexPosition, yPosition + relativeyPosition, 0, 0, numCircles));
+            AddCircle(Circle(numCircles, radius, Point(xPosition + relativexPosition, yPosition + relativeyPosition), Point(0, 0)));
         }
         // second wheel
         xPosition += wheel_separation;
 
-        AddCircle(Circle(radius * 0.1, xPosition, yPosition, 0, 0, numCircles, 1, sf::Color::Red));
+        AddCircle(Circle(numCircles, radius * 0.1, Point(xPosition, yPosition), Point(0, 0), 1, sf::Color::Red));
         for (int i = 0; i < numPointsOnWheel; i++) {
             relativexPosition = Radius * (cos(angle * i));
             relativeyPosition = Radius * (sin(angle * i));
-            AddCircle(Circle(radius, xPosition + relativexPosition, yPosition + relativeyPosition, 0, 0, numCircles));
+            AddCircle(Circle(numCircles, radius, Point(xPosition + relativexPosition, yPosition + relativeyPosition), Point(0, 0)));
         }
 
         // add chassis
-        AddCircle(Circle(radius, xPosition - Radius/2, yPosition - 2 * Radius, 0, 0, numCircles));
-        AddCircle(Circle(radius, (xPosition - wheel_separation) + Radius / 2, yPosition - 2 * Radius, 0, 0, numCircles));
+        AddCircle(Circle(numCircles, radius, Point(xPosition - Radius/2, yPosition - 2 * Radius), Point(0, 0)));
+        AddCircle(Circle(numCircles, radius, Point((xPosition - wheel_separation) + Radius / 2, yPosition - 2 * Radius), Point(0, 0), numCircles));
     }
 
     void updateCar() {
@@ -133,10 +134,10 @@ public:
         for (int wheel = 0; wheel < 2; wheel++) {
             int index_shift = (numPointsOnWheel + 1) * wheel;
             for (int i = start + index_shift; i < end + 1 + index_shift; i++) {
-                float relativeX = circles[i].getxPosition() - circles[index_shift].getxPosition();
-                float relativeY = circles[i].getyPosition() - circles[index_shift].getyPosition();
-                circles[i].addxVelocity(foverm * relativeY * deltaTime + extraVelocity);
-                circles[i].addyVelocity(-foverm * relativeX * deltaTime);
+                float relativeX = circles[i].position.x - circles[index_shift].position.x;
+                float relativeY = circles[i].position.y - circles[index_shift].position.y;
+                circles[i].velocity.x += (foverm * relativeY * deltaTime + extraVelocity);
+                circles[i].velocity.y += (-foverm * relativeX * deltaTime);
             }
         }
     }
@@ -144,7 +145,7 @@ public:
     void jump() {
         if (canJump) {
             for (Circle& circle : circles)
-                circle.addyAcceleration(-10000);
+                circle.acceleration.y += (-10000);
             // can only jump if touching the ground
                 canJump = false;
         }

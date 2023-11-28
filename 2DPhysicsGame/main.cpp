@@ -9,7 +9,7 @@
 int main()
 {
     // Variable initializations
-    const float deltaTime = 0.001f;
+    const float deltaTime = 0.01f;
     float screenHeight = 720;
     float screenWidth = 1280;
     float marginWidth = 280; // margin to display real time stats
@@ -20,7 +20,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandBox");
     // Class initializations
     Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
-    CircleManager cman(screenWidth, screenHeight, deltaTime, window);
+    //CircleManager cman(screenWidth, screenHeight, deltaTime, window);
     Rectangle rect(Point(100, 300), Point(0, 0), 0, 1, sf::Color::White, 100, 100, 0, 0);
     Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Green, 10, 300,0/*45*/,0);
     sf::Font font;
@@ -31,6 +31,8 @@ int main()
         system("pause");
     }
 
+    Circle c1(0, 50, Point(300, 200), Point(0, -0.1));
+    Circle c2(1, 50, Point(100, 200), Point(20, 0));
 
     //window.setFramerateLimit(64);
 
@@ -88,6 +90,15 @@ int main()
         //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
         //wallxVelocity = 0;
 
+        if (c1.CheckCircleCircleCollision(c2)) {
+            c1.ResolveCircleCircleCollision(c2);
+        }
+        c1.updatePostionVerlet(deltaTime);
+        c2.updatePostionVerlet(deltaTime);
+        c1.ResolveWallCollision(screenWidth, screenHeight);
+        c2.ResolveWallCollision(screenWidth, screenHeight);
+        c1.Draw(window);
+        c2.Draw(window);
         //car.Gravity(25);
         ////cman.Gravity(10);
         ////cman.SpringLink(0, 1, 200, 10);

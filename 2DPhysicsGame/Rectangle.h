@@ -53,12 +53,12 @@ public:
 		return vertices;
 	}
 
-	vector<Point> getAxes(Rectangle other) {
-		vector<Point> axes(4);
+	vector<Point> getAxes() {
+		vector<Point> axes(2);
 		axes[0] = this->rotate(Point(1, 0));
 		axes[1] = this->rotate(Point(0, 1));
-		axes[2] = other.rotate(Point(1, 0));
-		axes[3] = other.rotate(Point(0, 1));
+		//axes[2] = other.rotate(Point(1, 0));
+		//axes[3] = other.rotate(Point(0, 1));
 		return axes;
 	}
 
@@ -92,6 +92,21 @@ public:
 		return rotated;
 	}
 
+	bool isNearCircle(Circle other) {
+		float pseudoRadius = halfdiag;
+		float pseudoRadius2 = other.radius;
+		Point separationVector = other.position - this->position;
+		float distanceSquared = sqrt(separationVector.x * separationVector.x + separationVector.y * separationVector.y);
+
+		if (distanceSquared <= pseudoRadius + pseudoRadius2) {
+			return true;
+		}
+		else {
+			rectangleImage.setFillColor(color);
+			return false;
+		}
+	}
+
 	bool isNearRectangle(Rectangle other) {
 		float pseudoRadius = halfdiag;
 		float pseudoRadius2 = other.halfdiag;
@@ -108,10 +123,82 @@ public:
 		}
 
 	}
+
+	void isCircleCollsion(Circle& other) {
+		// SAT 
+		// find axes of each rectangle
+		vector<Point> axes = this->getAxes();
+		vector<Point> vertices1 = getVertices();
+
+		Point mtv; // minimum translation vector
+		float penetrationDepth = FLT_MAX;
+
+		bool allAxesOverlap = false;
+		float minProjection1;
+		float maxProjection1;
+		float minProjection2;
+		float maxProjection2;
+
+		for (Point& axis : axes) {
+			minProjection1 = FLT_MAX;
+			maxProjection1 = -FLT_MAX;
+			minProjection2 = axis.dotProduct(other.position) - other.radius;
+			maxProjection2 = axis.dotProduct(other.position) + other.radius;
+			//loop over points from first rectangle
+			for (Point& vertex1 : vertices1) {
+				if (axis.dotProduct(vertex1) < minProjection1)
+					minProjection1 = axis.dotProduct(vertex1);
+				if (axis.dotProduct(vertex1) > maxProjection1)
+					maxProjection1 = axis.dotProduct(vertex1);
+			}
+			// check overlap
+			allAxesOverlap = false;
+			if (minProjection1 < maxProjection2 && maxProjection1 > minProjection2) {
+				allAxesOverlap = true;
+				float tempDepth1 = abs(maxProjection1 - minProjection2);
+				float tempDepth2 = abs(maxProjection2 - minProjection1);
+				float tempDepth = tempDepth1 < tempDepth2 ? tempDepth1 : tempDepth2;
+
+				if (penetrationDepth > tempDepth) {
+					penetrationDepth = tempDepth;
+					mtv = axis * penetrationDepth;
+				}
+			}
+			else {
+				rectangleImage.setFillColor(sf::Color::Yellow);
+				return;
+			}
+
+		}
+		rectangleImage.setFillColor(sf::Color::Red);
+		// MTV Minimum Translation Vector
+		// figure out the sign first (always away from the other object)
+		float sign = -1;
+		Point thisPos(position);
+		Point otherPos(other.position);
+		Point dist = otherPos - thisPos;
+		if (mtv.dotProduct(dist) < 0)
+			sign = 1;
+
+		this->position += mtv * 0.5 * sign;
+		other.position += mtv * 0.5 * (-sign);
+	}
+
+
 	void isRectangleCollsion(Rectangle &other) {
 		// SAT 
 		// find axes of each rectangle
-		vector<Point> axes = getAxes(other);
+		vector<Point> axes1 = this->getAxes();
+		vector<Point> axes2 = other.getAxes();
+		vector<Point> axes;
+		for (Point& i : axes1) {
+			axes.push_back(i);
+		}
+		for (Point& j : axes2) {
+			axes.push_back(j);
+		}
+		
+		
 		vector<Point> vertices1 = getVertices();
 		vector<Point> vertices2 = other.getVertices();
 		Point mtv; // minimum translation vector

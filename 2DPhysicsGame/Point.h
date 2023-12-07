@@ -3,7 +3,12 @@
 struct Point {
 	float x;
 	float y;
-	Point() {}
+
+	// Default constructor
+	Point() {
+		x = 0;
+		y = 0;
+	}
 	//~Point();
 	Point(float X, float Y) {
 		x = X;

@@ -22,7 +22,7 @@ int main()
     Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
     //CircleManager cman(screenWidth, screenHeight, deltaTime, window);
     Rectangle rect(Point(100, 300), Point(0, 0), 0, 1, sf::Color::White, 100, 100, 0, 0);
-    Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Green, 10, 300,0/*45*/,0);
+    //Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Green, 10, 300,5, /*3*/0);
     sf::Font font;
 
     if (!font.loadFromFile(("C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame/sfml/VCR_OSD_MONO_1.001.ttf"))) { // C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame
@@ -31,8 +31,8 @@ int main()
         system("pause");
     }
 
-    Circle c1(0, 50, Point(300, 200), Point(0, -0.1));
-    Circle c2(1, 50, Point(100, 200), Point(20, 0));
+    Circle c1(0, 50, Point(300, 200), Point(0, 0));
+    //Circle c2(1, 50, Point(100, 200), Point(0, 0));
 
     //window.setFramerateLimit(64);
 
@@ -90,15 +90,15 @@ int main()
         //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
         //wallxVelocity = 0;
 
-        if (c1.CheckCircleCircleCollision(c2)) {
-            c1.ResolveCircleCircleCollision(c2);
-        }
+        //if (c1.CheckCircleCircleCollision(c2)) {
+        //    c1.ResolveCircleCircleCollision(c2);
+        //}
         c1.updatePostionVerlet(deltaTime);
-        c2.updatePostionVerlet(deltaTime);
+        //c2.updatePostionVerlet(deltaTime);
         c1.ResolveWallCollision(screenWidth, screenHeight);
-        c2.ResolveWallCollision(screenWidth, screenHeight);
+        //c2.ResolveWallCollision(screenWidth, screenHeight);
         c1.Draw(window);
-        c2.Draw(window);
+        //c2.Draw(window);
         //car.Gravity(25);
         ////cman.Gravity(10);
         ////cman.SpringLink(0, 1, 200, 10);
@@ -111,17 +111,29 @@ int main()
         sf::Time elapsed2 = clock.getElapsedTime();
 
         bool rectangleCollision;
-        if (rect.isNearRectangle(rect2))
-            rect.isRectangleCollsion(rect2);
+        //if (rect.isNearRectangle(rect2))
+        //    rect.isRectangleCollsion(rect2);
         if(rect.isNearWall(screenWidth, screenHeight))
             rect.ResolveWallCollision(screenWidth, screenHeight);
-        if (rect2.isNearWall(screenWidth, screenHeight))
-            rect2.ResolveWallCollision(screenWidth, screenHeight);
+        //if (rect2.isNearWall(screenWidth, screenHeight))
+        //    rect2.ResolveWallCollision(screenWidth, screenHeight);
+
+        bool rectangleCircleCollision;
+        if (rect.isNearCircle(c1))
+        {
+            rect.isCircleCollsion(c1);
+        }
+        //if (rect2.isNearCircle(c1)) 
+        //    {}
+        //if (rect.isNearCircle(c2)) 
+        //    {}
+        //if (rect2.isNearCircle(c2)) 
+        //    {}
 
         rect.update(deltaTime);
-        rect2.update(deltaTime);
+        //rect2.update(deltaTime);
         rect.Draw(window);
-        rect2.Draw(window);
+        //rect2.Draw(window);
         // output stats to sf window
         //cman.makeVelocityHistogram(30, 25);
 

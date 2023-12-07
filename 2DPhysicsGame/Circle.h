@@ -4,24 +4,8 @@
 
 class Circle : public Shape{
 public:
-	//int index;
 	float radius;
-	//Point position;	
-	//Point velocity;
-	//Point acceleration;
-	//float mass;
-	//sf::Color color;
-
 	Point oldAcceleration = Point(0, 0);
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="radius"></param>
-	/// <param name="xPosition"></param>
-	/// <param name="yPosition"></param>
-	/// <param name="xVelocity"></param>
-	/// <param name="yVelocity"></param>
-	/// <param name="color"></param>
 	Circle(int index, 
 		float radius, 
 		Point position, 

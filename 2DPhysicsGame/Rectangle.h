@@ -57,8 +57,6 @@ public:
 		vector<Point> axes(2);
 		axes[0] = this->rotate(Point(1, 0));
 		axes[1] = this->rotate(Point(0, 1));
-		//axes[2] = other.rotate(Point(1, 0));
-		//axes[3] = other.rotate(Point(0, 1));
 		return axes;
 	}
 
@@ -124,26 +122,31 @@ public:
 
 	}
 
-	void isCircleCollsion(Circle& other) {
-		// SAT 
-		// find axes of each rectangle
+	void isCircleCollsion(Circle& other, sf::RenderWindow & window) {
 		vector<Point> axes = this->getAxes();
-		vector<Point> vertices1 = getVertices();
+		vector<Point> vertices1 = this->getVertices();
 
 		Point mtv; // minimum translation vector
 		float penetrationDepth = FLT_MAX;
 
-		bool allAxesOverlap = false;
 		float minProjection1;
 		float maxProjection1;
 		float minProjection2;
 		float maxProjection2;
 
+		Point thisPos(position);
+		Point otherPos(other.position);
+
+		Point p; // contact point.
+		
+		// ckeck collision when circle collides with polygon side with SAT.
+
+		Point tempaxis;
 		for (Point& axis : axes) {
 			minProjection1 = FLT_MAX;
 			maxProjection1 = -FLT_MAX;
-			minProjection2 = axis.dotProduct(other.position) - other.radius;
-			maxProjection2 = axis.dotProduct(other.position) + other.radius;
+			minProjection2 = axis.dotProduct(otherPos) - other.radius;
+			maxProjection2 = axis.dotProduct(otherPos) + other.radius;
 			//loop over points from first rectangle
 			for (Point& vertex1 : vertices1) {
 				if (axis.dotProduct(vertex1) < minProjection1)
@@ -152,17 +155,7 @@ public:
 					maxProjection1 = axis.dotProduct(vertex1);
 			}
 			// check overlap
-			allAxesOverlap = false;
 			if (minProjection1 < maxProjection2 && maxProjection1 > minProjection2) {
-				allAxesOverlap = true;
-				float tempDepth1 = abs(maxProjection1 - minProjection2);
-				float tempDepth2 = abs(maxProjection2 - minProjection1);
-				float tempDepth = tempDepth1 < tempDepth2 ? tempDepth1 : tempDepth2;
-
-				if (penetrationDepth > tempDepth) {
-					penetrationDepth = tempDepth;
-					mtv = axis * penetrationDepth;
-				}
 			}
 			else {
 				rectangleImage.setFillColor(sf::Color::Yellow);
@@ -171,17 +164,73 @@ public:
 
 		}
 		rectangleImage.setFillColor(sf::Color::Red);
-		// MTV Minimum Translation Vector
+		p = getContactPoint(*this, other);
 		// figure out the sign first (always away from the other object)
 		float sign = -1;
-		Point thisPos(position);
-		Point otherPos(other.position);
 		Point dist = otherPos - thisPos;
 		if (mtv.dotProduct(dist) < 0)
 			sign = 1;
 
+		// circle center to contact point:
+		Point sep = other.position - p;
+		float sepScalar = sqrt(sep.dotProduct(sep));
+		mtv = sep * (1 / sepScalar) * (other.radius - sepScalar);
+
 		this->position += mtv * 0.5 * sign;
 		other.position += mtv * 0.5 * (-sign);
+
+
+		// Visualize contact point.
+		//sf::CircleShape X1;
+		//X1.setFillColor(sf::Color::Green);
+		//X1.setRadius(10.0f);
+		//X1.setPosition(sf::Vector2f(p.x - X1.getRadius(), p.y - X1.getRadius()));
+		//window.draw(X1);
+	}
+
+	Point getContactPoint(Rectangle rect, Circle circ) { // Better to have collision handling functions in its own separate class
+		Point contact;
+		vector<Point> vertices = rect.getVertices();
+		float min_dist_squared = FLT_MAX;
+		Point side, contactSide;
+		Point relativeCirclePos;
+		int closestSideIndex = 0;
+		float l, lFinal;
+
+		for (int i = 0; i < vertices.size(); i++) {
+			side = vertices[(i + 1) % vertices.size()] - vertices[i];
+			relativeCirclePos = circ.position - vertices[i];
+
+			// point to line dist squared NOT SQUARED FOR NOW
+			l = relativeCirclePos.dotProduct(side) / side.dotProduct(side);
+			Point normalToCirc = (relativeCirclePos - side * side.dotProduct(relativeCirclePos)*(1 / side.dotProduct(side))) ;
+
+			float new_min_dist_squared;
+			if (l < 0) {
+				new_min_dist_squared = relativeCirclePos.dotProduct(relativeCirclePos);
+			}
+			else if (l > 1) {
+				new_min_dist_squared = (relativeCirclePos - side).dotProduct(relativeCirclePos - side);
+			}
+			else {
+				new_min_dist_squared = (normalToCirc.dotProduct(normalToCirc));
+			}
+			
+
+			if (new_min_dist_squared < min_dist_squared) {
+				min_dist_squared = new_min_dist_squared; 
+				closestSideIndex = i;
+				contactSide = side;
+				lFinal = l;
+			}
+
+		}
+		// project circle center onto side and get contact point
+		lFinal = lFinal < 0 ? 0 :
+			(lFinal > 1 ? 1 : lFinal); // l is bound between 0 and 1
+		contact = vertices[closestSideIndex] + contactSide * lFinal;
+
+		return contact;
 	}
 
 

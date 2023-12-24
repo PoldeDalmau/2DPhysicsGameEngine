@@ -230,7 +230,7 @@ public:
         Point acceleration(forceX, forceY);
         // Update velocities according to Hook
         circles[circle1Index].acceleration += acceleration * (1 / circles[circle1Index].getMass());
-        circles[circle1Index].acceleration += acceleration * (- 1 / circles[circle1Index].getMass());
+        circles[circle2Index].acceleration += acceleration * (- 1 / circles[circle2Index].getMass());
 
 
     }
@@ -245,7 +245,7 @@ public:
         CheckCollisionsAndResolve(canJump);
     }
     void CheckCollisionsAndResolve(bool& canJump) {
-        bool contact = false;
+        bool contact = /*false*/true;
         for (int i = 0; i < circles.size(); i++) {
             circles[i].ResolveWallCollision(screenWidth, screenHeight/*, screenWidth, contact*/);
             //for (int j = i + 1; j < circles.size(); j++) {

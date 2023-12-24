@@ -17,7 +17,7 @@ private:
     bool canJump = true;
 //    vector<Circle> circles;
 //    int numCircles;
-    bool drawAll = false;
+    bool drawAll = true;
 
 public:
     Car(
@@ -71,17 +71,17 @@ public:
 
     void handleSprings() {
 
-        float internalDamping = 0.5;
-        float k_radial = 50;
-        float k_adjacent = 200;
+        float internalDamping = 0.9;
+        float k_radial = 200;
+        float k_adjacent = 100;
         //float k_adjacent = 200;
-        float k_chassis = 1000;
+        float k_chassis = 400;
 
         float angle = 2 * M_PI / numPointsOnWheel;
         float adjacentCircleDistance = 2 * Radius * sin(angle / 2);
         float diagDist = 2 * Radius * cos(angle / 2);
         // link between two wheels
-        SpringLink(0, numPointsOnWheel + 1, wheel_separation,10000, 0.99, drawAll);
+        SpringLink(0, numPointsOnWheel + 1, wheel_separation, k_chassis, internalDamping, drawAll);
         // internal wheel forces
         for (int wheel = 0; wheel < 2; wheel++) {
             int index_shift = (numPointsOnWheel + 1) * wheel;
@@ -110,15 +110,10 @@ public:
          //chassis with wheels
         float chassisWheelDist = Radius * sqrt(1/4 + 4); // sqrt(Radius/2^2 + 2 Radius^2)
         float chassisWheelDistDiag = sqrt(Radius*Radius*(1/4 + 4) + (wheel_separation - Radius/2)* (wheel_separation - Radius / 2)); // sqrt(Radius/2^2 + 2 Radius^2)
-        //SpringLink(0, numPointsOnWheel * 2 + 2 + 1, chassisWheelDist, k_chassis, internalDamping);
-        //SpringLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2, chassisWheelDist, k_chassis, internalDamping);
+        SpringLink(0, numPointsOnWheel * 2 + 2 + 1, chassisWheelDist, k_chassis, internalDamping);
+        SpringLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2, chassisWheelDist, k_chassis, internalDamping);
         SpringLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2 + 1, chassisWheelDistDiag, k_chassis, internalDamping);
         SpringLink(0, numPointsOnWheel * 2 + 2, chassisWheelDistDiag, k_chassis, internalDamping);
-
-        RodLink(0, numPointsOnWheel * 2 + 2 + 1, chassisWheelDist);
-        RodLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2, chassisWheelDist);
-      /*  RodLink(numPointsOnWheel + 1, numPointsOnWheel * 2 + 2 + 1, chassisWheelDistDiag);
-        RodLink(0, numPointsOnWheel * 2 + 2, chassisWheelDistDiag);*/
 
     }
 
@@ -127,8 +122,8 @@ public:
 
     void turnWheel(int clockwise) {
         float foverm = clockwise * 800 / Radius; // force causing rotation / mass / Radius of wheel
-        float extraVelocity = 0; 
-        //float extraVelocity = - clockwise * 2; 
+        //float extraVelocity = 0; 
+        float extraVelocity = - clockwise * 2; 
         int start = 1;
         int end = numPointsOnWheel;
         for (int wheel = 0; wheel < 2; wheel++) {
@@ -147,7 +142,7 @@ public:
             for (Circle& circle : circles)
                 circle.acceleration.y += (-10000);
             // can only jump if touching the ground
-                canJump = false;
+            //canJump = false;
         }
     }
 

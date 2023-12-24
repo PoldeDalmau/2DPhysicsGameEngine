@@ -9,7 +9,7 @@
 int main()
 {
     // Variable initializations
-    const float deltaTime = 0.01f;
+    const float deltaTime = 0.005f;
     float screenHeight = 720;
     float screenWidth = 1280;
     float marginWidth = 280; // margin to display real time stats
@@ -19,20 +19,22 @@ int main()
     // Screen initialization
     sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandBox");
     // Class initializations
-    Car car(screenWidth, screenHeight, deltaTime, window, 0.1, 40);
-    //CircleManager cman(screenWidth, screenHeight, deltaTime, window);
-    Rectangle rect(Point(100, 300), Point(0, 0), 0, 1, sf::Color::White, 100, 100, 0, 0);
-    //Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Green, 10, 300,5, /*3*/0);
+    //Car car(screenWidth, screenHeight, deltaTime, window, 1, 40);
+    CircleManager cman(screenWidth, screenHeight, deltaTime, window);
+    Rectangle rect(Point(300, 500), Point(0, 0), 0, 1, sf::Color::White, 100, 100, 0, 0);
+    Circle c1(0, 200, Point(300, 200), Point(0, -0));
+    Circle c2(1, 20, Point(400, 200), Point(0, -0));
+    Circle c3(2, 20, Point(600, 250), Point(0, 0));
+    Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Green, 10, 300,5, /*3*/0);
+    cman.AddCircle(c2);
+    cman.AddCircle(c3);
     sf::Font font;
-
     if (!font.loadFromFile(("C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame/sfml/VCR_OSD_MONO_1.001.ttf"))) { // C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame
         // Handle font loading error
         std::cout << "Error loading .ttf file for font" << std::endl;
         system("pause");
     }
 
-    Circle c1(0, 50, Point(300, 200), Point(0, 0));
-    //Circle c2(1, 50, Point(100, 200), Point(0, 0));
 
     //window.setFramerateLimit(64);
 
@@ -47,8 +49,8 @@ int main()
     //float massMSS = 20;
     //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
 
-    bool dummy = false;
-
+    bool dummy = true;
+    float jumpDist = 5;
     while (window.isOpen())
     {
         sf::Time elapsed1 = clock.getElapsedTime();
@@ -60,25 +62,26 @@ int main()
                 window.close();
             else if (event.type == sf::Event::KeyPressed) {
                 ////spin wheel
-                if (event.key.code == sf::Keyboard::D)
-                    rect.addxPosition(5);
+                if (event.key.code == sf::Keyboard::D) {
+                    rect.addxPosition(jumpDist);
                     //car.turnWheel(-1);
-                if (event.key.code == sf::Keyboard::A)
-                    rect.addxPosition(-5);
+                }
+                if (event.key.code == sf::Keyboard::A) {
+                    rect.addxPosition(-jumpDist);
                     //car.turnWheel(1);
+                }
                 if (event.key.code == sf::Keyboard::S)
-                    rect.addyPosition(5);
+                    rect.addyPosition(jumpDist);
                 if (event.key.code == sf::Keyboard::W)
-                    rect.addyPosition(-5);
+                    rect.addyPosition(-jumpDist);
                 if (event.key.code == sf::Keyboard::Q)
-                    rect.addAngle(-5);
+                    rect.addAngle(-jumpDist);
                 if (event.key.code == sf::Keyboard::E)
-                    rect.addAngle(5);
-
-                if (event.key.code == sf::Keyboard::Space)
-                    car.jump();
-                if (event.key.code == sf::Keyboard::V)
-                    car.drawSprings();
+                    rect.addAngle(jumpDist);
+                //if (event.key.code == sf::Keyboard::Space)
+                //    car.jump();
+                //if (event.key.code == sf::Keyboard::V)
+                //    car.drawSprings();
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                     window.close();
@@ -95,45 +98,45 @@ int main()
         //}
         c1.updatePostionVerlet(deltaTime);
         //c2.updatePostionVerlet(deltaTime);
+        //c3.updatePostionVerlet(deltaTime);
+
         c1.ResolveWallCollision(screenWidth, screenHeight);
         //c2.ResolveWallCollision(screenWidth, screenHeight);
+        //c3.ResolveWallCollision(screenWidth, screenHeight);
         c1.Draw(window);
+
+
         //c2.Draw(window);
-        //car.Gravity(25);
-        ////cman.Gravity(10);
-        ////cman.SpringLink(0, 1, 200, 10);
-        ////cman.RodLink(0, 1, 200);
-        ////cman.UpdateAll(dummy);
+        //c3.Draw(window);
+        //c2.Draw(window);
+        //car.Gravity(10);
+        //cman.Gravity(10);
+        //cman.SpringLink(0, 1, 200, 10,0.5);
+        //cman.UpdateAll(dummy);
         //car.updateCar();
 
         //car.DrawAll();
         //cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
 
-        bool rectangleCollision;
-        //if (rect.isNearRectangle(rect2))
-        //    rect.isRectangleCollsion(rect2);
+        rect.update(deltaTime);
+        rect2.update(deltaTime);
+        rect.Draw(window);
+        rect2.Draw(window);
+
+        if (rect.isNearRectangle(rect2))
+            rect.isRectangleCollsion(rect2);
         if(rect.isNearWall(screenWidth, screenHeight))
             rect.ResolveWallCollision(screenWidth, screenHeight);
-        //if (rect2.isNearWall(screenWidth, screenHeight))
-        //    rect2.ResolveWallCollision(screenWidth, screenHeight);
+        if (rect2.isNearWall(screenWidth, screenHeight))
+            rect2.ResolveWallCollision(screenWidth, screenHeight);
 
         bool rectangleCircleCollision;
         if (rect.isNearCircle(c1))
         {
-            rect.isCircleCollsion(c1);
+            rect.isCircleCollsion(c1, window);
         }
-        //if (rect2.isNearCircle(c1)) 
-        //    {}
-        //if (rect.isNearCircle(c2)) 
-        //    {}
-        //if (rect2.isNearCircle(c2)) 
-        //    {}
-
-        rect.update(deltaTime);
-        //rect2.update(deltaTime);
-        rect.Draw(window);
-        //rect2.Draw(window);
+        
         // output stats to sf window
         //cman.makeVelocityHistogram(30, 25);
 

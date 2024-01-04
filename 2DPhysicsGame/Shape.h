@@ -28,9 +28,9 @@ public:
 	}
 
 	// Gets
-	int getIndex() {
-		return index;
-	}
+	//int getIndex() {
+	//	return index;
+	//}
 	//float getxPosition() {
 	//	return xPosition;
 	//}
@@ -38,9 +38,9 @@ public:
 	//	return yPosition;
 	//}
 
-	Point getPosition() {
-		return position;
-	}
+	//Point getPosition() {
+	//	return position;
+	//}
 
 	//float getxVelocity() {
 	//	return xVelocity;
@@ -49,13 +49,13 @@ public:
 	//	return yVelocity;
 	//}
 
-	Point getVelocity() {
-		return velocity;
-	}
+	//Point getVelocity() {
+	//	return velocity;
+	//}
 
-	float getMass() {
-		return mass;
-	}
+	//float getMass() {
+	//	return mass;
+	//}
 
 	// Updates position given a velocity using Euler integration:
 	void updatePositionEuler(const float deltaTime) {
@@ -71,24 +71,12 @@ public:
 	void updatePostionVerlet(const float deltaTime) {
 		Point oldPos = position;
 		Point oldVel = velocity;
-		//float oldXPosition = xPosition;
-		//float oldYPosition = yPosition;
-		//float oldXVelocity = xVelocity;
-		//float oldYVelocity = yVelocity;
-		//xPosition += oldXVelocity * deltaTime + oldXAcceleration * deltaTime * deltaTime;
-		//yPosition += oldYVelocity * deltaTime + oldYAcceleration * deltaTime * deltaTime;
 		position += oldVel * deltaTime + oldAcceleration * deltaTime * deltaTime;
 
-		//xVelocity += (oldXAcceleration + xAcceleration) / 2 * deltaTime;
-		//yVelocity += (oldYAcceleration + yAcceleration) / 2 * deltaTime;
 		velocity += (oldAcceleration + acceleration) * 0.5 * deltaTime;
 		// update/ reset accelerations
 		oldAcceleration = acceleration;
-		//oldXAcceleration = xAcceleration;
-		//oldYAcceleration = yAcceleration;
 		acceleration = Point(0, 0);
-		//xAcceleration = 0;
-		//yAcceleration = 0;
 	}
 
 	// Sets
@@ -98,16 +86,16 @@ public:
 	//void setY(float y) {
 	//	yPosition = y;
 	//}
-	void addxPosition(float x) {
-		position.x += x;
-	}
-	void addyPosition(float y) {
-		position.y += y;
-	}
+	//void addxPosition(float x) {
+	//	position.x += x;
+	//}
+	//void addyPosition(float y) {
+	//	position.y += y;
+	//}
 
-	void addPosition(Point p) {
-		this->position += p;
-	}
+	//void addPosition(Point p) {
+	//	this->position += p;
+	//}
 
 	//void addxVelocity(float vx) {
 	//	xVelocity += vx;
@@ -129,6 +117,11 @@ public:
 	//void addyAcceleration(float ay) {
 	//	yAcceleration += ay;
 	//}
+
+	// Gravity
+	void Gravity(float g) {
+		this->acceleration.y += g;
+	}
 
 	// Handle Collisions
 	virtual void ResolveWallCollision(float screenWidth, float screenHeight) {};

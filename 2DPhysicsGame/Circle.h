@@ -6,14 +6,20 @@ class Circle : public Shape{
 public:
 	float radius;
 	Point oldAcceleration = Point(0, 0);
+	const float floorRestitutionFactor;
+	const float shapeRestitutionFactor;
 	Circle(int index, 
 		float radius, 
 		Point position, 
 		Point velocity,
+		float floorRestitutionFactor,
+		float shapeRestitutionFactor,
 		float mass = 1,
 		sf::Color color = sf::Color::White)
 		: 
 		Shape(position, velocity, index, mass, color), 
+		floorRestitutionFactor(floorRestitutionFactor),
+		shapeRestitutionFactor(shapeRestitutionFactor),
 		radius(radius)
 	{}
 
@@ -43,7 +49,6 @@ public:
 		return distanceSquared <= sumOfRadiiSquared;
 	}
 
-	// first, checks displaces circles if they are overlapping by half of the the overlap for each. Then, assuming equal mass, it resolves the collision with momentum and energy conservation.
 	void ResolveCircleCircleCollision(Circle& othercircle) {
 		//first, move circles out of overlap:
 		float distanceX = othercircle.position.x - position.x;
@@ -58,36 +63,30 @@ public:
 			float displacementY = (overlap / distanceMagnitude) * distanceY;
 
 			// Move the circles to non-overlapping positions
-			//if(getIndex() )
-
-			//if (getIndex() > 9){ // hardcoded, change later
-				addxPosition(-displacementX * 0.5f);
-				addyPosition(-displacementY * 0.5f);
-			//}
-			//if (othercircle.getIndex() > 9) {
-				othercircle.addxPosition(displacementX * 0.5f);
-				othercircle.addyPosition(displacementY * 0.5f);
-			//}
+			position.x += (-displacementX * 0.5f);
+			position.y += (-displacementY * 0.5f);
+			othercircle.position.x += (displacementX * 0.5f);
+			othercircle.position.y += (displacementY * 0.5f);
 
 		}
 
-		// then, handle the collision assuming equal mass:
+		// then, handle the collision
 
 		float normalX = distanceX / distanceMagnitude;
 		float normalY = distanceY / distanceMagnitude;
 
-		float relativeVelocityX = othercircle.velocity.x - velocity.x;
-		float relativeVelocityY = othercircle.velocity.y - velocity.y;
+		float relativeVelocityX = velocity.x - othercircle.velocity.x;
+		float relativeVelocityY = velocity.y - othercircle.velocity.y;
 
 		float dotProduct = relativeVelocityX * normalX + relativeVelocityY * normalY;
 
-		float impulse = (2.0f * dotProduct) / ((*this).getMass() + othercircle.getMass());
+		float impulse = ( - (1.0f + shapeRestitutionFactor) * dotProduct) / (1/(*this).mass + 1/othercircle.mass);
 
-		float vx = impulse * othercircle.getMass() * normalX;
-		float vy =impulse * othercircle.getMass() * normalY;
+		float vx = impulse * normalX;
+		float vy = impulse * normalY;
 		Point dv(vx, vy);
-		velocity += dv;
-		othercircle.velocity += dv * (-1);
+		this->velocity += dv * (1 / this->mass);
+		othercircle.velocity += dv * (-1 / othercircle.mass);
 
 	}
 	void ResolveWallCollision(float screenWidth, float screenHeight/*, float wallxVelocity*//*, bool& contact*/) override {
@@ -96,9 +95,8 @@ public:
 			flipxVelocity();
 		}
 		else if (position.x + radius > screenWidth) {
-			position.x = (screenWidth - radius); // something looks wrong here 
+			position.x = (screenWidth - radius);
 			(*this).flipxVelocity();
-			//(*this).addxVelocity(wallxVelocity);
 		}
 
 
@@ -107,7 +105,7 @@ public:
 			position.y = (radius);
 		}
 		else if (position.y + radius > screenHeight) {
-			(*this).flipyVelocity();
+			this->velocity.y += -(1 + floorRestitutionFactor) * (this->velocity.y);
 			position.y = (screenHeight - radius);
 			//contact = true;
 		}

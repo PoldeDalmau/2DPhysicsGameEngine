@@ -15,6 +15,7 @@ private:
     float screenHeight;
     vector<float> velocityDistribution;
     sf::RenderWindow& window;
+    float shapeRestitutionFactor = 1;
 public:
     //bool canJump = false;
     vector<Circle> circles;
@@ -48,7 +49,7 @@ public:
         float yPos = screenHeight - 4 * radius * numCirclesColumn;
         for (int i = 0; i < numCirclesRow; i++)
             for (int j = 0; j < numCirclesColumn; j++) {
-                AddCircle(Circle(numCircles, radius, Point(xPos + i * latticeConstant, yPos + j * latticeConstant), Point(0, 0), particleMass, sf::Color::Blue));
+                AddCircle(Circle(numCircles, radius, Point(xPos + i * latticeConstant, yPos + j * latticeConstant), Point(0, 0), shapeRestitutionFactor, shapeRestitutionFactor, particleMass, sf::Color::Blue));
             }
     }
 
@@ -158,17 +159,17 @@ public:
             float vy = 0;
             //float vx = -100 + 5*numx;
             //float vy = 100 - 5*numx;
-            AddCircle(Circle(numCircles, radius, Point(x, y), Point(vx, vy)));
+            AddCircle(Circle(numCircles, radius, Point(x, y), Point(vx, vy), shapeRestitutionFactor, shapeRestitutionFactor));
         }
         // make one circle to hit all the circles;
-        AddCircle(Circle(numCircles, radius, Point(screenWidth / 2.0f + radius, screenHeight - radius), Point(100, -100), 1, sf::Color::Red));
+        AddCircle(Circle(numCircles, radius, Point(screenWidth / 2.0f + radius, screenHeight - radius), Point(100, -100), shapeRestitutionFactor, shapeRestitutionFactor, 1, sf::Color::Red));
     }
 
     // gravity
     // g: acceleration
     void Gravity(float g) {
         for (Circle & circle : circles){
-            circle.acceleration.y += (g); // down is up in sfml
+            circle.Gravity(g); // down is up in sfml
         }
 
     }
@@ -202,10 +203,10 @@ public:
         float yDisp = normY * displacement;
         drawLine(circle1Index, circle2Index);
 
-        circles[circle1Index].addxPosition(xDisp/2);
-        circles[circle2Index].addxPosition(-xDisp/2);
-        circles[circle1Index].addyPosition(yDisp/2);
-        circles[circle2Index].addyPosition(-yDisp/2);
+        circles[circle1Index].position.x += (xDisp/2);
+        circles[circle2Index].position.x += (-xDisp/2);
+        circles[circle1Index].position.y += (yDisp/2);
+        circles[circle2Index].position.y += (-yDisp/2);
 
     }
 
@@ -229,8 +230,8 @@ public:
         float forceY = distanceY/distance * (k * (distance - eqDistance) + damping * relativeVelocityY * distanceY / distance);
         Point acceleration(forceX, forceY);
         // Update velocities according to Hook
-        circles[circle1Index].acceleration += acceleration * (1 / circles[circle1Index].getMass());
-        circles[circle2Index].acceleration += acceleration * (- 1 / circles[circle2Index].getMass());
+        circles[circle1Index].acceleration += acceleration * (1 / circles[circle1Index].mass);
+        circles[circle2Index].acceleration += acceleration * (- 1 / circles[circle2Index].mass);
 
 
     }
@@ -274,7 +275,7 @@ public:
         stats[0] = (std::to_string(numCircles));
 
         for (Circle& circ : circles)
-            if (circ.getIndex() > 9){ // change hardcoded 9 to size of mass spring system
+            if (circ.index > 9){ // change hardcoded 9 to size of mass spring system
                 particleEnergy = circ.velocity.x * circ.velocity.x + circ.velocity.y * circ.velocity.y;
                 internalEnergy += particleEnergy;
                 velocityDistribution[circle_index] = sqrt(particleEnergy);

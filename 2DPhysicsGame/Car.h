@@ -18,6 +18,7 @@ private:
 //    vector<Circle> circles;
 //    int numCircles;
     bool drawAll = true;
+    float shapeRestitutionFactor = 1;
 
 public:
     Car(
@@ -43,25 +44,25 @@ public:
         float adjacentCircleDistance = 2 * Radius * sin(angle / 2);
 
         // first wheel
-        AddCircle(Circle(numCircles, radius * 0.1, Point(xPosition, yPosition),Point( 0, 0), 1, sf::Color::Red));
+        AddCircle(Circle(numCircles, radius * 0.1, Point(xPosition, yPosition),Point( 0, 0), shapeRestitutionFactor, shapeRestitutionFactor, 1, sf::Color::Red));
         for (int i = 0; i < numPointsOnWheel; i++) {
             relativexPosition = Radius * (cos(angle * i));
             relativeyPosition = Radius * (sin(angle * i));
-            AddCircle(Circle(numCircles, radius, Point(xPosition + relativexPosition, yPosition + relativeyPosition), Point(0, 0)));
+            AddCircle(Circle(numCircles, radius, Point(xPosition + relativexPosition, yPosition + relativeyPosition), Point(0, 0), shapeRestitutionFactor, shapeRestitutionFactor));
         }
         // second wheel
         xPosition += wheel_separation;
 
-        AddCircle(Circle(numCircles, radius * 0.1, Point(xPosition, yPosition), Point(0, 0), 1, sf::Color::Red));
+        AddCircle(Circle(numCircles, radius * 0.1, Point(xPosition, yPosition), Point(0, 0), shapeRestitutionFactor, shapeRestitutionFactor, 1, sf::Color::Red));
         for (int i = 0; i < numPointsOnWheel; i++) {
             relativexPosition = Radius * (cos(angle * i));
             relativeyPosition = Radius * (sin(angle * i));
-            AddCircle(Circle(numCircles, radius, Point(xPosition + relativexPosition, yPosition + relativeyPosition), Point(0, 0)));
+            AddCircle(Circle(numCircles, radius, Point(xPosition + relativexPosition, yPosition + relativeyPosition), Point(0, 0), shapeRestitutionFactor, shapeRestitutionFactor));
         }
 
         // add chassis
-        AddCircle(Circle(numCircles, radius, Point(xPosition - Radius/2, yPosition - 2 * Radius), Point(0, 0)));
-        AddCircle(Circle(numCircles, radius, Point((xPosition - wheel_separation) + Radius / 2, yPosition - 2 * Radius), Point(0, 0), numCircles));
+        AddCircle(Circle(numCircles, radius, Point(xPosition - Radius/2, yPosition - 2 * Radius), Point(0, 0), shapeRestitutionFactor, shapeRestitutionFactor));
+        AddCircle(Circle(numCircles, radius, Point((xPosition - wheel_separation) + Radius / 2, yPosition - 2 * Radius), Point(0, 0), shapeRestitutionFactor, shapeRestitutionFactor));
     }
 
     void updateCar() {

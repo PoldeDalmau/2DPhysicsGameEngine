@@ -23,10 +23,10 @@ sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandB
 // Class initializations
 //Car car(screenWidth, screenHeight, deltaTime, window, 1, 40);
 CircleManager cman(screenWidth, screenHeight, deltaTime, window);
-Rectangle rect(Point(700, 300), Point(-10, 0), 0, 10, sf::Color::White, 100, 300, 0/*M_PI/4.01*/, floorRestitutionFactor, ShapeRestitutionFactor, 0.3);
-//Rectangle rect2(Point(200, 300), Point(0, 0/*5, 10*/), 1, 1, sf::Color::Green, 10, 300, 5, floorRestitutionFactor, ShapeRestitutionFactor, 0/*30*/);
-Circle c1(0, 50, Point(300, 300), Point(-22, 33/*50, -6*/), floorRestitutionFactor, ShapeRestitutionFactor, 1);
-Circle c2(1, 75, Point(400, 200), Point(45, 10), floorRestitutionFactor, ShapeRestitutionFactor, 2);
+Rectangle rect(Point(700, 300), Point(-15, 23), 0, 10, sf::Color::White, 100, 300, 0 /*M_PI/4.01*/, floorRestitutionFactor, ShapeRestitutionFactor, .3f);
+Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Blue, 50, 100, 5, floorRestitutionFactor, ShapeRestitutionFactor, 0/*30*/);
+//Circle c1(0, 50, Point(300, 300), Point(-22, 33/*50, -6*/), floorRestitutionFactor, ShapeRestitutionFactor, 1);
+//Circle c2(1, 75, Point(400, 200), Point(45, 10), floorRestitutionFactor, ShapeRestitutionFactor, 2);
 //Circle c3(2, 20, Point(600, 250), Point(0, 0));
 //cman.AddCircle(c2);
 //cman.AddCircle(c3);
@@ -98,21 +98,21 @@ int main()
         //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
         //wallxVelocity = 0;
 
-        c1.Gravity(9.81);
-        c2.Gravity(9.81);
+        //c1.Gravity(9.81);
+        //c2.Gravity(9.81);
 
-        if (c1.CheckCircleCircleCollision(c2)) {
-            c1.ResolveCircleCircleCollision(c2);
-        }
-        c1.updatePostionVerlet(deltaTime);
-        c2.updatePostionVerlet(deltaTime);
-        //c3.updatePostionVerlet(deltaTime);
+        //if (c1.CheckCircleCircleCollision(c2)) {
+        //    c1.ResolveCircleCircleCollision(c2);
+        //}
+        //c1.updatePostionVerlet(deltaTime);
+        //c2.updatePostionVerlet(deltaTime);
+        ////c3.updatePostionVerlet(deltaTime);
 
-        c1.ResolveWallCollision(screenWidth, screenHeight);
-        c2.ResolveWallCollision(screenWidth, screenHeight);
-        //c3.ResolveWallCollision(screenWidth, screenHeight);
-        c1.Draw(window);
-        c2.Draw(window);
+        //c1.ResolveWallCollision(screenWidth, screenHeight);
+        //c2.ResolveWallCollision(screenWidth, screenHeight);
+        ////c3.ResolveWallCollision(screenWidth, screenHeight);
+        //c1.Draw(window);
+        //c2.Draw(window);
 
 
         //c3.Draw(window);
@@ -127,32 +127,38 @@ int main()
         //cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
 
-        rect.Gravity(9.81);
+        //rect.Gravity(9.81);
         rect.update(deltaTime);
-        //rect2.update(deltaTime);
+        rect2.update(deltaTime);
         rect.Draw(window);
-        //rect2.Draw(window);
+        rect2.Draw(window);
 
-        //if (rect.isNearRectangle(rect2))
-        //    (rect.isRectangleCollsion(rect2));
+        if (rect.isNearRectangle(rect2))
+            if (rect.isRectangleCollsion(rect2)) {
+                rect.resolveRectangleCollision(rect2, window);
+            }
         if(rect.isNearWall(screenWidth, screenHeight))
             rect.ResolveWallCollision(screenWidth, screenHeight);
-        //if (rect2.isNearWall(screenWidth, screenHeight))
-        //    rect2.ResolveWallCollision(screenWidth, screenHeight);
+        if (rect2.isNearWall(screenWidth, screenHeight))
+            rect2.ResolveWallCollision(screenWidth, screenHeight);
 
-        if (rect.isNearCircle(c1))
-            if (rect.isCircleCollsion(c1/*, window*/)) {
-                rect.resolveCircleCollision(c1);
-            }
-        if (rect.isNearCircle(c2))
-            if (rect.isCircleCollsion(c2)) {
-                rect.resolveCircleCollision(c2);
-            }
+        //if (rect.isNearCircle(c1))
+        //    if (rect.isCircleCollsion(c1/*, window*/)) {
+        //        rect.resolveCircleCollision(c1);
+        //    }
+        //if (rect.isNearCircle(c2))
+        //    if (rect.isCircleCollsion(c2)) {
+        //        rect.resolveCircleCollision(c2);
+        //    }
         //if (rect2.isNearCircle(c1))
         //    if (rect2.isCircleCollsion(c1/*, window*/)) {
         //        rect2.resolveCircleCollision(c1);
         //    }
-        
+        if (rect.isNearRectangle(rect2)) {
+            if (rect.isRectangleCollsion(rect2)) {
+                rect.resolveRectangleCollision(rect2, window);
+            }
+        }
         
         // output stats to sf window
         //cman.makeVelocityHistogram(30, 25);

@@ -167,7 +167,39 @@ public:
 		return true;
 	}
 
-	void resolveCircleCollision(Circle & other) {
+	void resolveRectangleCollision(Rectangle other, sf::RenderWindow & window) {
+		Point collisionPoint, edge;
+		getContactPointAndEdgeRectangles(*this, other, collisionPoint, edge);
+
+		Point normal = normal * (1 / sqrt(edge.dotProduct(edge)));
+
+		Point r_AP = collisionPoint - this->position;
+		Point r_BP = collisionPoint - other.position;
+		Point r_AP_perp(-r_AP.y, r_AP.x);
+		Point r_BP_perp(-r_BP.y, r_BP.x);
+
+		Point v_AP = this->velocity + r_AP_perp * this->angularVelocity;
+		Point v_BP = other.velocity + r_BP_perp * other.angularVelocity;
+		Point v_AB = v_AP - v_BP;
+		// j: impulse
+		float j = -(1 + shapeRestitutionFactor) * (v_AB).dotProduct(normal)
+			/ (1.0f / this->mass + 1.0f / other.mass + std::pow(r_AP_perp.dotProduct(normal), 2) / this->momentIntertia + std::pow(r_BP_perp.dotProduct(normal), 2) / other.momentIntertia);
+
+		this->velocity += normal * (j / mass);
+		this->angularVelocity += r_AP_perp.dotProduct(normal) * j / this->momentIntertia;
+		other.velocity += normal * (-j / other.mass);
+		other.angularVelocity -= r_BP_perp.dotProduct(normal) * j / other.momentIntertia;
+
+
+		// Visualize contact point.
+		sf::CircleShape X1;
+		X1.setFillColor(sf::Color::Green);
+		X1.setRadius(10.0f);
+		X1.setPosition(sf::Vector2f(collisionPoint.x - X1.getRadius(), collisionPoint.y - X1.getRadius()));
+		window.draw(X1);
+	}
+
+	void resolveCircleCollision(Circle & other) { // rename to shapeCollision and make a collisions class with different overloads.
 		Point otherPos = other.position;
 		Point thisPos = this->position;
 		Point mtv;
@@ -180,7 +212,7 @@ public:
 		float sepScalar = sqrt(sep.dotProduct(sep));
 
 		Point dist = otherPos - thisPos;
-		mtv = sep * (1 / sepScalar) * (other.radius - sepScalar)/* * 1.01f*/;
+		mtv = sep * (1 / sepScalar) * (other.radius - sepScalar);
 		if (mtv.dotProduct(dist) < 0)
 			sign = 1;
 
@@ -201,20 +233,67 @@ public:
 		Point v_BP = other.velocity;
 		Point v_AB = v_AP - v_BP;
 		// j: impulse
-		float j = -(1 + shapeRestitutionFactor) * (v_AB).dotProduct(normal) / (1.0f / this->mass + 1.0f / other.mass + std::pow(r_AP_perp.dotProduct(normal), 2) / momentIntertia);
+		float j = -(1 + shapeRestitutionFactor) * (v_AB).dotProduct(normal)
+			/ (1.0f / this->mass + 1.0f / other.mass + std::pow(r_AP_perp.dotProduct(normal), 2) / this->momentIntertia);
 
 		this->velocity += normal * (j / mass);
-		this->angularVelocity += r_AP_perp.dotProduct(normal) * j / momentIntertia;
+		this->angularVelocity += r_AP_perp.dotProduct(normal) * j / this->momentIntertia;
 		other.velocity += normal * (-j / other.mass);
-		// Visualize contact point.
-		sf::CircleShape X1;
-		//X1.setFillColor(sf::Color::Green);
-		//X1.setRadius(10.0f);
-		//X1.setPosition(sf::Vector2f(p.x - X1.getRadius(), p.y - X1.getRadius()));
-		//window.draw(X1);
 	}
 
-	void getContactPointAndEdgeCircle(Rectangle rect, Circle circ, Point& contact, Point& edge) { // Better to have collision handling functions in its own separate class
+	void getContactPointAndEdgeRectangles(Rectangle rect1, Rectangle rect2, Point& contact, Point& edge) { // Pending: Better to have collision handling functions in its own separate class
+		vector<Point> vertices1;
+		vector<Point> vertices2;
+		vector<vector<Point>> vertices({ rect1.getVertices(), rect2.getVertices() });
+		float min_dist_squared = FLT_MAX;
+		Point side, contactSide, contactVertex;
+		Point relativeVertexPos;
+		int closestSideIndex = 0;
+		float l, lFinal;
+
+		// rect1 edges vs rect2 vertices and then rect2 edges vs rect1 vertices
+		for (int k = 0; k < 2; k++) {
+			vertices1 = vertices[k];
+			vertices2 = vertices[(k+1)%2];
+
+			for (int i = 0; i < vertices1.size(); i++) {
+				for (int j = 0; j < vertices2.size(); j++) {
+
+					side = vertices1[(i + 1) % vertices1.size()] - vertices1[i];
+					relativeVertexPos = vertices2[j] - vertices1[i];
+					// point to line dist
+					l = relativeVertexPos.dotProduct(side) / side.dotProduct(side);
+					Point normalToCirc = (relativeVertexPos - side * side.dotProduct(relativeVertexPos) * (1 / side.dotProduct(side)));
+
+					float new_min_dist_squared;
+					if (l < 0) {
+						new_min_dist_squared = relativeVertexPos.dotProduct(relativeVertexPos);
+					}
+					else if (l > 1) {
+						new_min_dist_squared = (relativeVertexPos - side).dotProduct(relativeVertexPos - side);
+					}
+					else {
+						new_min_dist_squared = (normalToCirc.dotProduct(normalToCirc));
+					}
+
+
+					if (new_min_dist_squared < min_dist_squared) {
+						min_dist_squared = new_min_dist_squared;
+						contactSide = side;
+						lFinal = l;
+						contactVertex = vertices1[i];
+					}
+				}
+			}
+		}
+		// project vertex center onto side and get contact point
+		lFinal = lFinal < 0 ? 0 :
+			(lFinal > 1 ? 1 : lFinal); // l is bound between 0 and 1
+		contact = contactVertex + contactSide * lFinal;
+		edge = contactSide;
+	}
+
+	void getContactPointAndEdgeCircle(Rectangle rect, Circle circ, Point& contact, Point& edge) { // Pending: Better to have collision handling functions in its own separate class
 		vector<Point> vertices = rect.getVertices();
 		float min_dist_squared = FLT_MAX;
 		Point side, contactSide;
@@ -226,7 +305,7 @@ public:
 			side = vertices[(i + 1) % vertices.size()] - vertices[i];
 			relativeCirclePos = circ.position - vertices[i];
 
-			// point to line dist squared NOT SQUARED FOR NOW
+			// point to line dist
 			l = relativeCirclePos.dotProduct(side) / side.dotProduct(side);
 			Point normalToCirc = (relativeCirclePos - side * side.dotProduct(relativeCirclePos)*(1 / side.dotProduct(side))) ;
 
@@ -313,17 +392,14 @@ public:
 
 				if (penetrationDepth > tempDepth)	{
 					penetrationDepth = tempDepth;
-					mtv = edge * penetrationDepth /** 1.01f*/; // increase separation for safety
+					mtv = edge * penetrationDepth;
 				}
 			} else {
-				//rectangleImage.setFillColor(sf::Color::Yellow);
 				return false;
 			}
 		}
-		//rectangleImage.setFillColor(sf::Color::Red);
-		// MTV Minimum Translation Vector
-		// figure out the sign first (always away from the other object)
 
+		// figure out the sign first (always away from the other object)
 		float sign = -1;
 		Point thisPos(position);
 		Point otherPos(other.position);
@@ -333,6 +409,7 @@ public:
 
 		this->position += mtv * 0.5 * sign;
 		other.position += mtv * 0.5 * (-sign);
+		return true;
 	}
 
 

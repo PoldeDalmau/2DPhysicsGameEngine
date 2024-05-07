@@ -9,8 +9,8 @@
 // Variable initializations
 //const float deltaTime = 0.005f; // ensures car is stable.
 const float deltaTime = 0.01f;
-float floorRestitutionFactor = .90f;
-float ShapeRestitutionFactor = .90f;
+float floorRestitutionFactor = .80f;
+float ShapeRestitutionFactor = .80f;
 float worldtime = 0;
 float screenHeight = 720;
 float screenWidth = 1280;
@@ -23,8 +23,8 @@ sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandB
 // Class initializations
 //Car car(screenWidth, screenHeight, deltaTime, window, 1, 40);
 CircleManager cman(screenWidth, screenHeight, deltaTime, window);
-Rectangle rect(Point(700, 300), Point(-15, 23), 0, 10, sf::Color::White, 100, 300, 0 /*M_PI/4.01*/, floorRestitutionFactor, ShapeRestitutionFactor, .3f);
-Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Blue, 50, 100, 5, floorRestitutionFactor, ShapeRestitutionFactor, 0/*30*/);
+Rectangle rect(Point(700, 300), Point(-40, 23), 0, 1, sf::Color::White, 100, 300, 0 /*M_PI/4.01*/, floorRestitutionFactor, ShapeRestitutionFactor, .0f);
+Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Blue, 500, 100, 0.1, floorRestitutionFactor, ShapeRestitutionFactor, 0/*30*/);
 //Circle c1(0, 50, Point(300, 300), Point(-22, 33/*50, -6*/), floorRestitutionFactor, ShapeRestitutionFactor, 1);
 //Circle c2(1, 75, Point(400, 200), Point(45, 10), floorRestitutionFactor, ShapeRestitutionFactor, 2);
 //Circle c3(2, 20, Point(600, 250), Point(0, 0));

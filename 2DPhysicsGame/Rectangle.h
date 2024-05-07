@@ -84,8 +84,6 @@ public:
 	}
 
 	Point rotate(Point vertex) {
-		//float angleRad = angle * M_PI / 180; // convert to radians
-
 		Point rotated;
 		rotated.x = vertex.x * cos(angle) - vertex.y * sin(angle);
 		rotated.y = vertex.x * sin(angle) + vertex.y * cos(angle);
@@ -167,36 +165,50 @@ public:
 		return true;
 	}
 
-	void resolveRectangleCollision(Rectangle other, sf::RenderWindow & window) {
-		Point collisionPoint, edge;
-		getContactPointAndEdgeRectangles(*this, other, collisionPoint, edge);
+	void resolveRectangleCollision(Rectangle& other, sf::RenderWindow & window) {
+		vector<Point> collisionPoints, edges;
+		getContactPointAndEdgeRectangles(*this, other, collisionPoints, edges);
 
-		Point normal = normal * (1 / sqrt(edge.dotProduct(edge)));
+		Point dpos(0, 0);
+		Point dvel(0, 0);
+		float dangvel = 0;
 
-		Point r_AP = collisionPoint - this->position;
-		Point r_BP = collisionPoint - other.position;
-		Point r_AP_perp(-r_AP.y, r_AP.x);
-		Point r_BP_perp(-r_BP.y, r_BP.x);
+		for (int i = 0; i < edges.size(); i++) {
+			Point normal(-edges[i].y, edges[i].x); // points toward body A
+			normal = normal * (1 / sqrt(normal.dotProduct(normal)));
 
-		Point v_AP = this->velocity + r_AP_perp * this->angularVelocity;
-		Point v_BP = other.velocity + r_BP_perp * other.angularVelocity;
-		Point v_AB = v_AP - v_BP;
-		// j: impulse
-		float j = -(1 + shapeRestitutionFactor) * (v_AB).dotProduct(normal)
-			/ (1.0f / this->mass + 1.0f / other.mass + std::pow(r_AP_perp.dotProduct(normal), 2) / this->momentIntertia + std::pow(r_BP_perp.dotProduct(normal), 2) / other.momentIntertia);
+			Point r_AP = collisionPoints[i] - this->position;
+			Point r_BP = collisionPoints[i] - other.position;
+			Point r_AP_perp(-r_AP.y, r_AP.x);
+			Point r_BP_perp(-r_BP.y, r_BP.x);
 
-		this->velocity += normal * (j / mass);
-		this->angularVelocity += r_AP_perp.dotProduct(normal) * j / this->momentIntertia;
-		other.velocity += normal * (-j / other.mass);
-		other.angularVelocity -= r_BP_perp.dotProduct(normal) * j / other.momentIntertia;
+			Point v_AP = this->velocity + r_AP_perp * this->angularVelocity;
+			Point v_BP = other.velocity + r_BP_perp * other.angularVelocity;
+			Point v_AB = v_AP - v_BP;
+			// j: impulse
+			float j = 
+				-(1 + shapeRestitutionFactor) * (v_AB).dotProduct(normal)
+				/ (
+					1.0f / this->mass + 1.0f / other.mass 
+					+ std::pow(r_AP_perp.dotProduct(normal), 2) / this->momentIntertia 
+					+ std::pow(r_BP_perp.dotProduct(normal), 2) / other.momentIntertia
+					)
+				;
 
+			dvel += normal * (j / mass);
+			dangvel += r_AP_perp.dotProduct(normal) * j / this->momentIntertia;
 
-		// Visualize contact point.
-		sf::CircleShape X1;
-		X1.setFillColor(sf::Color::Green);
-		X1.setRadius(10.0f);
-		X1.setPosition(sf::Vector2f(collisionPoint.x - X1.getRadius(), collisionPoint.y - X1.getRadius()));
-		window.draw(X1);
+			// Visualize contact point.
+			sf::CircleShape X1;
+			X1.setFillColor(sf::Color::Green);
+			X1.setRadius(10.0f);
+			X1.setPosition(sf::Vector2f(collisionPoints[i].x - X1.getRadius(), collisionPoints[i].y - X1.getRadius()));
+			window.draw(X1);
+		}
+		this->velocity += dvel;
+		this->angularVelocity += dangvel;
+		other.velocity += dvel * (- 1);
+		other.angularVelocity -= dangvel;
 	}
 
 	void resolveCircleCollision(Circle & other) { // rename to shapeCollision and make a collisions class with different overloads.
@@ -241,7 +253,7 @@ public:
 		other.velocity += normal * (-j / other.mass);
 	}
 
-	void getContactPointAndEdgeRectangles(Rectangle rect1, Rectangle rect2, Point& contact, Point& edge) { // Pending: Better to have collision handling functions in its own separate class
+	void getContactPointAndEdgeRectangles(Rectangle rect1, Rectangle rect2, vector<Point>& contact, vector<Point>& edge) { // Pending: Better to have collision handling functions in its own separate class
 		vector<Point> vertices1;
 		vector<Point> vertices2;
 		vector<vector<Point>> vertices({ rect1.getVertices(), rect2.getVertices() });
@@ -289,8 +301,8 @@ public:
 		// project vertex center onto side and get contact point
 		lFinal = lFinal < 0 ? 0 :
 			(lFinal > 1 ? 1 : lFinal); // l is bound between 0 and 1
-		contact = contactVertex + contactSide * lFinal;
-		edge = contactSide;
+		contact.push_back(contactVertex + contactSide * lFinal);
+		edge.push_back(contactSide);
 	}
 
 	void getContactPointAndEdgeCircle(Rectangle rect, Circle circ, Point& contact, Point& edge) { // Pending: Better to have collision handling functions in its own separate class

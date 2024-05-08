@@ -5,6 +5,9 @@
 #include "Rectangle.h"
 #include "Shape.h"
 #include <iostream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 // Variable initializations
 //const float deltaTime = 0.005f; // ensures car is stable.
@@ -34,12 +37,17 @@ sf::Font font;
 
 int main()
 {
-    if (!font.loadFromFile(("C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame/sfml/VCR_OSD_MONO_1.001.ttf"))) { // C:/Users/polde/OneDrive/Desktop/Projects/2DPhysicsGame
+    fs::path currentPath = fs::current_path(); // Get the current directory path
+    fs::path parentPath = currentPath.parent_path(); // Get the parent directory's path
+    
+    if (!font.loadFromFile((parentPath / "sfml/VCR_OSD_MONO_1.001.ttf").string())) {
         // Handle font loading error
         std::cout << "Error loading .ttf file for font" << std::endl;
+        std::cout << "Make sure the file exists in" << std::endl;
+        std::cout << parentPath / "sfml/VCR_OSD_MONO_1.001.ttf" << std::endl;
         system("pause");
     }
-
+    
 
     //window.setFramerateLimit(64);
 
@@ -164,6 +172,7 @@ int main()
         //cman.makeVelocityHistogram(30, 25);
 
         //stats = cman.getStats();
+
         sf::Text text;
         worldtime += deltaTime;
         text.setString("\n Time elapsed: " + std::to_string(worldtime));

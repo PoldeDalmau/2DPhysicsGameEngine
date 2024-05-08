@@ -17,3 +17,7 @@ The engine now can include a squishy car that can be controlled with the keys <k
 
 ![squishy car](https://github.com/PoldeDalmau/2DPhysicsGame/assets/73791685/3208c108-1925-4078-8fc1-8a0c4673c035)
 
+TO DO:
+- [x] path to sfml libraries needs to be relative
+- [ ] path to font must also be relative
+- [ ] write a little guide on how to set up game! (include compiler, sfml version, .dll in release and debug. Generate Release and Debug folders by running once in each mode. Change bow to x86 (default may be x64)

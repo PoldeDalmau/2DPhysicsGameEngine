@@ -21,3 +21,5 @@ TO DO:
 - [x] path to sfml libraries needs to be relative
 - [x] path to font must also be relative
 - [ ] write a little guide on how to set up game! (include compiler, sfml version, .dll in release and debug. Generate Release and Debug folders by running once in each mode. Change bow to x86 (default may be x64)
+- [ ] rectangle-rectangle collisions can only have one simultaneous collision point. Extend to two for stability.
+

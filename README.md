@@ -6,7 +6,7 @@ Two circles and a rectangle with a restitution factor of 0.9 for collisions with
 ![circle polygon collision](https://github.com/PoldeDalmau/2DPhysicsGame/assets/73791685/4fe3fce7-b248-461e-9d51-27287a4165b9)
 
 
-500 balls are initialized at rest. An extra ball is initialized with a velocity and in red. Quickly, we see that through collisions, the system begins to behave like an ideal gas. See the velocity (unitless) histogram at the bottom right.
+500 white circles are initialized at rest. An extra red circle is initialized with a velocity. Quickly, we see that through collisions, the system begins to behave like an ideal gas. See the velocity (unitless) histogram at the bottom right.
 
 ![ideal gas](https://github.com/PoldeDalmau/2DPhysicsGame/assets/73791685/20f82932-d901-44fb-bae7-c6cbd27b8f73)
 
@@ -22,4 +22,6 @@ TO DO:
 - [x] path to font must also be relative
 - [ ] write a little guide on how to set up game! (include compiler, sfml version, .dll in release and debug. Generate Release and Debug folders by running once in each mode. Change bow to x86 (default may be x64)
 - [ ] rectangle-rectangle collisions can only have one simultaneous collision point. Extend to two for stability.
+- [ ] Refactoring: collision handling class with template for different shapes instead of member functions handling collision for different shapes.
+- [ ] Quadtree class that can be constructed with Circle manager.
 

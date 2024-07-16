@@ -4,6 +4,7 @@
 #include "Car.h"
 #include "Rectangle.h"
 #include "Shape.h"
+#include "QuadTree.h"
 #include <iostream>
 #include <filesystem>
 
@@ -26,6 +27,7 @@ sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandB
 // Class initializations
 //Car car(screenWidth, screenHeight, deltaTime, window, 1, 40);
 CircleManager cman(screenWidth, screenHeight, deltaTime, window);
+AABB boundary(Point(screenWidth / 2.0, screenHeight / 2.0), screenWidth / 2.0, screenHeight / 2.0);
 Rectangle rect(Point(700, 300), Point(-40, 23), 0, 1, sf::Color::White, 100, 300, 0 /*M_PI/4.01*/, floorRestitutionFactor, ShapeRestitutionFactor, .0f);
 Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Blue, 500, 100, 0.1, floorRestitutionFactor, ShapeRestitutionFactor, 0/*30*/);
 //Circle c1(0, 50, Point(300, 300), Point(-22, 33/*50, -6*/), floorRestitutionFactor, ShapeRestitutionFactor, 1);
@@ -62,6 +64,11 @@ int main()
     //float massMSS = 20;
     //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
     cman.AddCirclesMesh(5, 300, 50);
+    //cman.AddCircle(Circle(0, 5, Point(500, 200), Point(5, .1), 1, 1));
+    //cman.AddCircle(Circle(0, 5, Point(400, 200), Point(5, 0), 1, 1));
+    //cman.AddCircle(Circle(0, 5, Point(300, 200), Point(5, 0), 1, 1));
+    //cman.AddCircle(Circle(0, 5, Point(200, 200), Point(5, 0), 1, 1));
+    //cman.AddCircle(Circle(0, 5, Point(100, 200), Point(5, 0), 1, 1));
 
     bool dummy = false;
     float jumpDist = 5;
@@ -104,6 +111,7 @@ int main()
 
         window.clear();
 
+        QuadTree qt(boundary, cman.circles, 4, window);
         cman.UpdateAll(dummy);
         cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();

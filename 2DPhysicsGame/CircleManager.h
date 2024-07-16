@@ -190,26 +190,6 @@ public:
     float SpringForce(){
     }
 
-    void RodLink(int circle1Index, int circle2Index, float eqDistance) {
-        assert(circle1Index < circles.size(), "circle index out of bounds");
-        assert(circle2Index < circles.size(), "circle index out of bounds");
-
-        float distance = circles[circle1Index].getDistance(circles[circle2Index]);
-        float normX = (circles[circle2Index].position.x - circles[circle1Index].position.x) / distance;
-        float normY = (circles[circle2Index].position.y - circles[circle1Index].position.y) / distance;
-        float displacement = (distance - eqDistance)/2;
-
-        float xDisp = normX * displacement;
-        float yDisp = normY * displacement;
-        drawLine(circle1Index, circle2Index);
-
-        circles[circle1Index].position.x += (xDisp/2);
-        circles[circle2Index].position.x += (-xDisp/2);
-        circles[circle1Index].position.y += (yDisp/2);
-        circles[circle2Index].position.y += (-yDisp/2);
-
-    }
-
     void SpringLink(int circle1Index, int circle2Index, float eqDistance, float k = 1000, float damping = 0, bool draw = true) {
         assert(circle1Index < circles.size(), "circle index out of bounds");
         assert(circle2Index < circles.size(), "circle index out of bounds");
@@ -246,13 +226,13 @@ public:
         CheckCollisionsAndResolve(canJump);
     }
     void CheckCollisionsAndResolve(bool& canJump) {
-        bool contact = /*false*/true;
+        bool contact = true;
         for (int i = 0; i < circles.size(); i++) {
             circles[i].ResolveWallCollision(screenWidth, screenHeight/*, screenWidth, contact*/);
-            //for (int j = i + 1; j < circles.size(); j++) {
-            //    if (circles[i].CheckCircleCircleCollision(circles[j]))
-            //        circles[i].ResolveCircleCircleCollision(circles[j]);
-            //}
+            for (int j = i + 1; j < circles.size(); j++) {
+                if (circles[i].CheckCircleCircleCollision(circles[j]))
+                    circles[i].ResolveCircleCircleCollision(circles[j]);
+            }
         }
         if (contact)
             canJump = true;
@@ -266,7 +246,7 @@ public:
     }
 
     vector<std::string> getStats() {
-        velocityDistribution = vector<float>(circles.size() - 9); // change hardcoded 9 to size of mass spring system
+        velocityDistribution = vector<float>(circles.size());
 
         vector < std:: string > stats(3);
         float particleEnergy,
@@ -275,7 +255,7 @@ public:
         stats[0] = (std::to_string(numCircles));
 
         for (Circle& circ : circles)
-            if (circ.index > 9){ // change hardcoded 9 to size of mass spring system
+            { 
                 particleEnergy = circ.velocity.x * circ.velocity.x + circ.velocity.y * circ.velocity.y;
                 internalEnergy += particleEnergy;
                 velocityDistribution[circle_index] = sqrt(particleEnergy);

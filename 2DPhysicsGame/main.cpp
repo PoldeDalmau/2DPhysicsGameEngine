@@ -12,8 +12,8 @@ namespace fs = std::filesystem;
 // Variable initializations
 //const float deltaTime = 0.005f; // ensures car is stable.
 const float deltaTime = 0.01f;
-float floorRestitutionFactor = .80f;
-float ShapeRestitutionFactor = .80f;
+float floorRestitutionFactor = .50f;
+float ShapeRestitutionFactor = .50f;
 float worldtime = 0;
 float screenHeight = 720;
 float screenWidth = 1280;
@@ -61,8 +61,9 @@ int main()
     //float radiusMSS = 20;
     //float massMSS = 20;
     //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
+    cman.AddCirclesMesh(5, 300, 50);
 
-    bool dummy = true;
+    bool dummy = false;
     float jumpDist = 5;
     while (window.isOpen())
     {
@@ -73,113 +74,52 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            else if (event.type == sf::Event::KeyPressed) {
-                //spin wheel
-                if (event.key.code == sf::Keyboard::D) {
-                    rect.position.x += (jumpDist);
-                    //car.turnWheel(-1);
-                }
-                if (event.key.code == sf::Keyboard::A) {
-                    rect.position.x += (-jumpDist);
-                    //car.turnWheel(1);
-                }
-                if (event.key.code == sf::Keyboard::S)
-                    rect.position.y += (jumpDist);
-                if (event.key.code == sf::Keyboard::W)
-                    rect.position.y += (-jumpDist);
-                if (event.key.code == sf::Keyboard::Q)
-                    rect.angle += (-jumpDist * M_PI / 180);
-                if (event.key.code == sf::Keyboard::E)
-                    rect.angle += (jumpDist * M_PI / 180);
-                //if (event.key.code == sf::Keyboard::Space)
-                //    car.jump();
-                //if (event.key.code == sf::Keyboard::V)
-                //    car.drawSprings();
+            //else if (event.type == sf::Event::KeyPressed) {
+            //    //spin wheel
+            //    if (event.key.code == sf::Keyboard::D) {
+            //        rect.position.x += (jumpDist);
+            //        //car.turnWheel(-1);
+            //    }
+            //    if (event.key.code == sf::Keyboard::A) {
+            //        rect.position.x += (-jumpDist);
+            //        //car.turnWheel(1);
+            //    }
+            //    if (event.key.code == sf::Keyboard::S)
+            //        rect.position.y += (jumpDist);
+            //    if (event.key.code == sf::Keyboard::W)
+            //        rect.position.y += (-jumpDist);
+            //    if (event.key.code == sf::Keyboard::Q)
+            //        rect.angle += (-jumpDist * M_PI / 180);
+            //    if (event.key.code == sf::Keyboard::E)
+            //        rect.angle += (jumpDist * M_PI / 180);
+            //    //if (event.key.code == sf::Keyboard::Space)
+            //    //    car.jump();
+            //    //if (event.key.code == sf::Keyboard::V)
+            //    //    car.drawSprings();
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                     window.close();
-            }
+            //}
         }
 
         window.clear();
 
-        //cman.handleSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS);
-        //wallxVelocity = 0;
-
-        //c1.Gravity(9.81);
-        //c2.Gravity(9.81);
-
-        //if (c1.CheckCircleCircleCollision(c2)) {
-        //    c1.ResolveCircleCircleCollision(c2);
-        //}
-        //c1.updatePostionVerlet(deltaTime);
-        //c2.updatePostionVerlet(deltaTime);
-        ////c3.updatePostionVerlet(deltaTime);
-
-        //c1.ResolveWallCollision(screenWidth, screenHeight);
-        //c2.ResolveWallCollision(screenWidth, screenHeight);
-        ////c3.ResolveWallCollision(screenWidth, screenHeight);
-        //c1.Draw(window);
-        //c2.Draw(window);
-
-
-        //c3.Draw(window);
-        //c2.Draw(window);
-        //car.Gravity(10);
-        //cman.Gravity(10);
-        //cman.SpringLink(0, 1, 200, 10,0.5);
-        //cman.UpdateAll(dummy);
-        //car.updateCar();
-
-        //car.DrawAll();
-        //cman.DrawAll();
+        cman.UpdateAll(dummy);
+        cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
-
-        //rect.Gravity(9.81);
-        rect.update(deltaTime);
-        rect2.update(deltaTime);
-        rect.Draw(window);
-        rect2.Draw(window);
-
-        if (rect.isNearRectangle(rect2))
-            if (rect.isRectangleCollsion(rect2)) {
-                rect.resolveRectangleCollision(rect2, window);
-            }
-        if(rect.isNearWall(screenWidth, screenHeight))
-            rect.ResolveWallCollision(screenWidth, screenHeight);
-        if (rect2.isNearWall(screenWidth, screenHeight))
-            rect2.ResolveWallCollision(screenWidth, screenHeight);
-
-        //if (rect.isNearCircle(c1))
-        //    if (rect.isCircleCollsion(c1/*, window*/)) {
-        //        rect.resolveCircleCollision(c1);
-        //    }
-        //if (rect.isNearCircle(c2))
-        //    if (rect.isCircleCollsion(c2)) {
-        //        rect.resolveCircleCollision(c2);
-        //    }
-        //if (rect2.isNearCircle(c1))
-        //    if (rect2.isCircleCollsion(c1/*, window*/)) {
-        //        rect2.resolveCircleCollision(c1);
-        //    }
-        if (rect.isNearRectangle(rect2)) {
-            if (rect.isRectangleCollsion(rect2)) {
-                rect.resolveRectangleCollision(rect2, window);
-            }
-        }
         
         // output stats to sf window
         //cman.makeVelocityHistogram(30, 25);
 
-        //stats = cman.getStats();
+        stats = cman.getStats();
 
         sf::Text text;
         worldtime += deltaTime;
         text.setString("\n Time elapsed: " + std::to_string(worldtime));
-        //text.setString("\nNumber of particles: " + stats[0] + 
-        //    "\nInternal Energy:\n" + stats[1] + 
-        //    "\nVelocity of red particle: \n" + stats[2] + 
-        //    "\nFrame update time: " + std::to_string(elapsed2.asMilliseconds() - elapsed1.asMilliseconds()) + " ms");
+        text.setString("\nNumber of particles: " + stats[0] + 
+            "\nInternal Energy:\n" + stats[1] + 
+            "\nVelocity of red particle: \n" + stats[2] + 
+            "\nFrame update time: " + std::to_string(elapsed2.asMilliseconds() - elapsed1.asMilliseconds()) + " ms");
         text.setCharacterSize(16);
         text.setFillColor(sf::Color::White);
         text.setPosition(screenWidth - marginWidth + 25, 5.00f);

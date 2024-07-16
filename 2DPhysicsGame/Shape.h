@@ -27,36 +27,6 @@ public:
 	{
 	}
 
-	// Gets
-	//int getIndex() {
-	//	return index;
-	//}
-	//float getxPosition() {
-	//	return xPosition;
-	//}
-	//float getyPosition() {
-	//	return yPosition;
-	//}
-
-	//Point getPosition() {
-	//	return position;
-	//}
-
-	//float getxVelocity() {
-	//	return xVelocity;
-	//}
-	//float getyVelocity() {
-	//	return yVelocity;
-	//}
-
-	//Point getVelocity() {
-	//	return velocity;
-	//}
-
-	//float getMass() {
-	//	return mass;
-	//}
-
 	// Updates position given a velocity using Euler integration:
 	void updatePositionEuler(const float deltaTime) {
 		//xPosition += xVelocity * deltaTime;
@@ -67,7 +37,6 @@ public:
 
 	// Updates position given an initial position, velocity and acceleration using the Velocity Verlet integrator:
 	// pending: not actually using the correct method
-	// Acceleration is calculated from old position -> should be new position
 	void updatePostionVerlet(const float deltaTime) {
 		Point oldPos = position;
 		Point oldVel = velocity;
@@ -79,30 +48,6 @@ public:
 		acceleration = Point(0, 0);
 	}
 
-	// Sets
-	//void setX(float x) {
-	//	xPosition = x;
-	//}
-	//void setY(float y) {
-	//	yPosition = y;
-	//}
-	//void addxPosition(float x) {
-	//	position.x += x;
-	//}
-	//void addyPosition(float y) {
-	//	position.y += y;
-	//}
-
-	//void addPosition(Point p) {
-	//	this->position += p;
-	//}
-
-	//void addxVelocity(float vx) {
-	//	xVelocity += vx;
-	//}
-	//void addyVelocity(float vy) {
-	//	yVelocity += vy;
-	//}
 	void flipxVelocity() {
 		//xVelocity *= -1;
 		velocity.x *= -1;
@@ -111,12 +56,6 @@ public:
 		//yVelocity *= -1;
 		velocity.y *= -1;
 	}
-	//void addxAcceleration(float ax) {
-	//	xAcceleration += ax;
-	//}
-	//void addyAcceleration(float ay) {
-	//	yAcceleration += ay;
-	//}
 
 	// Gravity
 	void Gravity(float g) {

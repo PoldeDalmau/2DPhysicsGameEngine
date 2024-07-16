@@ -139,6 +139,7 @@
     <ClInclude Include="Circle.h" />
     <ClInclude Include="CircleManager.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Quadtree.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="World.h" />

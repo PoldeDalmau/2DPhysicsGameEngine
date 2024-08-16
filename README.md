@@ -19,13 +19,17 @@ The engine now can include a squishy car that can be controlled with the keys <k
 
 # Guide
 Once you have cloned the project locally, proceed to build it (see below) in Release (and in Debug if you wish). 
+
 ![Screenshot 2024-08-16 145542](https://github.com/user-attachments/assets/aed1f984-debe-4f11-8895-c2b39d916f1b)
+
 Make sure to select the x86 config (see screenshot below). Building will generate the Realease (and Debug) folders in your project directory. 
+
 ![Screenshot 2024-08-16 141446](https://github.com/user-attachments/assets/faaa59d2-e6e5-4488-8d01-0e29e7a6b12b)
+
 Once those folders are generated, copy the .dll files from the sfml_config.zip into the corresponding folders.
 
 
-TO DO:
+# TO DO
 - [x] path to sfml libraries needs to be relative
 - [x] path to font must also be relative
 - [ ] write a little guide on how to set up game!

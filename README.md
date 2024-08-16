@@ -17,11 +17,25 @@ The engine now can include a squishy car that can be controlled with the keys <k
 
 ![squishy car](https://github.com/PoldeDalmau/2DPhysicsGame/assets/73791685/3208c108-1925-4078-8fc1-8a0c4673c035)
 
+# Guide
+Once you have cloned the project locally, proceed to build it (see below) in Release (and in Debug if you wish). 
+![Screenshot 2024-08-16 145542](https://github.com/user-attachments/assets/aed1f984-debe-4f11-8895-c2b39d916f1b)
+Make sure to select the x86 config (see screenshot below). Building will generate the Realease (and Debug) folders in your project directory. 
+![Screenshot 2024-08-16 141446](https://github.com/user-attachments/assets/faaa59d2-e6e5-4488-8d01-0e29e7a6b12b)
+Once those folders are generated, copy the .dll files from the sfml_config.zip into the corresponding folders.
+
+
 TO DO:
 - [x] path to sfml libraries needs to be relative
 - [x] path to font must also be relative
-- [ ] write a little guide on how to set up game! (include compiler, sfml version, .dll in release and debug. Generate Release and Debug folders by running once in each mode. Change bow to x86 (default may be x64)
+- [ ] write a little guide on how to set up game!
+  - [ ] mention which compiler
+  - [x] sfml version
+  - [x] .dll in release and debug. Generate Release and Debug folders by running once in each mode. Change bow to x86 (default may be x64)
 - [ ] rectangle-rectangle collisions can only have one simultaneous collision point. Extend to two for stability.
 - [ ] Refactoring: collision handling class with template for different shapes instead of member functions handling collision for different shapes.
 - [ ] Quadtree class that can be constructed with Circle manager.
+  - [x] store circles in quadtree with visualization of borders
+  - [ ] write query function
+  - [ ] make templates
 

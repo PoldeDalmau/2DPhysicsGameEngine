@@ -50,23 +50,36 @@ class AABB {
                 circle.position.y < center.y + height &&
                 circle.position.y > center.y - height);
         }
+
+        bool intersects(AABB range) {
+            return (
+                range.center.x - range.width > center.x + width ||
+                range.center.x + range.width > center.x - width ||
+                range.center.y - range.height > center.y + height ||
+                range.center.y + range.height > center.y - height
+                );
+        }
 };
 
 
 class QuadTree {
 private:
     int nodeCapacity;
-    vector<Circle> cman;
-    vector<Circle*> points;
+    vector<Circle>& cman;
     sf::RenderWindow& window;
+    vector<Circle*> points;
 public:
     bool divided = false;
     AABB boundary;
+    std::unique_ptr<QuadTree> SouthEast;
+    std::unique_ptr<QuadTree> SouthWest;
+    std::unique_ptr<QuadTree> NorthEast;
+    std::unique_ptr<QuadTree> NorthWest;
 
     QuadTree(
         AABB boundary,
-        vector<Circle> cman, 
-        int nodeCapacity, 
+        vector<Circle>& cman,
+        int nodeCapacity,
         sf::RenderWindow& window)
         :
         boundary(boundary),
@@ -75,13 +88,15 @@ public:
         window(window)
     {
         boundary.drawBoundary(window);
-        for (Circle& circle : cman) {
-            insert(circle);
+
+        vector<Circle>::iterator iter;
+        for (Circle& iter : cman) {
+            insert(iter);
         }
     }
 
 
-    void insert(Circle circle) {
+    void insert(Circle &circle) {
 
         if (!boundary.contains(circle)) {
             return;
@@ -108,16 +123,39 @@ public:
         AABB nwBoundary(c + Point(-w / 2, -h / 2), w / 2, h / 2);
         AABB neBoundary(c + Point(w / 2, -h / 2), w / 2, h / 2);
 
-        QuadTree sw(swBoundary, cman, nodeCapacity, window);
-        QuadTree se(seBoundary, cman, nodeCapacity, window);
-        QuadTree nw(nwBoundary, cman, nodeCapacity, window);
-        QuadTree ne(neBoundary, cman, nodeCapacity, window);
+        SouthEast = std::make_unique<QuadTree>(seBoundary, cman, nodeCapacity, window);
+        SouthWest = std::make_unique<QuadTree>(swBoundary, cman, nodeCapacity, window);
+        NorthEast = std::make_unique<QuadTree>(neBoundary, cman, nodeCapacity, window);
+        NorthWest = std::make_unique<QuadTree>(nwBoundary, cman, nodeCapacity, window);
     }
 
+    vector<Circle*> query(AABB range) {
+        vector<Circle*> found;
+        if (!boundary.intersects(range)) {
+            return found;
+        }
+        else {        
+            if (divided) {
+                vector<Circle*> se = (*SouthEast).query(range);
+                vector<Circle*> sw = (*SouthWest).query(range);
+                vector<Circle*> ne = (*NorthEast).query(range);
+                vector<Circle*> nw = (*NorthWest).query(range);
 
-    // Children
-    //QuadTree* northWest;
-    //QuadTree* northEast;
-    //QuadTree* southWest;
-    //QuadTree* southEast;
+                found.insert(found.end(), se.begin(), se.end());
+                found.insert(found.end(), sw.begin(), sw.end());
+                found.insert(found.end(), ne.begin(), ne.end());
+                found.insert(found.end(), nw.begin(), nw.end());
+            }
+            else {
+                for (Circle* p : points) {
+                    if (range.contains(*p)) {
+                        (*p).color = (sf::Color::Blue);
+                        found.push_back(p);
+                    }
+                }
+            }
+
+            return found;
+        }
+    }
 };

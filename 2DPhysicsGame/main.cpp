@@ -67,12 +67,12 @@ int main()
     //float radiusMSS = 20;
     //float massMSS = 20;
     //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
-    cman.AddCirclesMesh(5, 300, 50);
-    //cman.AddCircle(Circle(0, 5, Point(500, 200), Point(5, .1), 1, 1));
-    //cman.AddCircle(Circle(0, 5, Point(400, 200), Point(5, 0), 1, 1));
-    //cman.AddCircle(Circle(0, 5, Point(300, 200), Point(5, 0), 1, 1));
-    //cman.AddCircle(Circle(0, 5, Point(200, 200), Point(5, 0), 1, 1));
-    //cman.AddCircle(Circle(0, 5, Point(100, 200), Point(5, 0), 1, 1));
+    cman.AddCirclesMesh(5, 300, 25);
+    //cman.AddCircle(Circle(0, 25, Point(500, 200), Point(50, .1), 1, 1, 5));
+    //cman.AddCircle(Circle(0, 65, Point(400, 200), Point(5, 0), 1, 1, 15));
+    //cman.AddCircle(Circle(0, 25, Point(300, 200), Point(5, 0), 1, 1, 5));
+    //cman.AddCircle(Circle(0, 90, Point(200, 200), Point(5, 0), 1, 1, 25));
+    //cman.AddCircle(Circle(0, 45, Point(100, 200), Point(5, 0), 1, 1, 10));
 
     bool dummy = false;
     float jumpDist = 5;
@@ -114,14 +114,14 @@ int main()
         }
 
         window.clear();
-        QuadTree qt(boundary, cman.circles, 4, window);
-        testB.drawBoundary(window);
-        vector<Circle*> inBound = qt.query(testB);
-        for (Circle* c : inBound) {
-            (*c).color = sf::Color::Blue;
-        }
+        QuadTree qt(boundary, cman.circles, 35, window);
+        //testB.drawBoundary(window);
+        //vector<Circle*> inBound = qt.query(testB);
+        //for (Circle* c : inBound) {
+        //    (*c).color = sf::Color::Blue;
+        //}
         //cman.UpdateAll(dummy);
-        cman.UpdateAllQT(&qt, cBounds);
+        cman.UpdateAllQT(&qt);
         cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
         

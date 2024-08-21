@@ -157,7 +157,7 @@ public:
 
         int numberOfCirclesPerRow = int(screenWidth/latticeConstant);
 
-        for (int numy = 0; numy < 6; numy++)
+        for (int numy = 0; numy < 9; numy++)
         for (int numx = 0; numx < numberOfCirclesPerRow; numx++) {
             //if (numberOfCircles == numx)
             //    break;
@@ -170,7 +170,7 @@ public:
             AddCircle(Circle(numCircles, radius, Point(x, y), Point(vx, vy), shapeRestitutionFactor, shapeRestitutionFactor));
         }
         // make one circle to hit all the circles;
-        AddCircle(Circle(numCircles, radius, Point(screenWidth / 2.0f + radius, screenHeight - radius), Point(100, -100), shapeRestitutionFactor, shapeRestitutionFactor, 1, sf::Color::Red));
+        AddCircle(Circle(numCircles, radius, Point(screenWidth / 2.0f + radius, screenHeight - radius), Point(100, -110), shapeRestitutionFactor, shapeRestitutionFactor, 1, sf::Color::Red));
     }
 
     // gravity
@@ -237,7 +237,7 @@ public:
 
     }
 
-    void UpdateAllQT(QuadTree* qt, AABB& cBounds);
+    void UpdateAllQT(QuadTree* qt);
 
     void CheckCollisionsAndResolve(bool& canJump) {
         bool contact = true;

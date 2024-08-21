@@ -49,10 +49,10 @@ public:
     }
 
     bool contains(Circle circle) {
-        return (circle.position.x > center.x - width &&
-            circle.position.x < center.x + width &&
-            circle.position.y < center.y + height &&
-            circle.position.y > center.y - height);
+        return (circle.position.x + circle.radius > center.x - width &&
+            circle.position.x - circle.radius < center.x + width &&
+            circle.position.y - circle.radius < center.y + height &&
+            circle.position.y + circle.radius > center.y - height);
     }
 
     bool intersects(AABB range) {
@@ -135,26 +135,25 @@ public:
         NorthWest = std::make_unique<QuadTree>(nwBoundary, cman, nodeCapacity, window);
     }
 
-    vector<Circle*> query(AABB range) {
+    vector<Circle*> query(AABB range, const Circle &current) {
         vector<Circle*> found;
         if (!boundary.intersects(range)) {
             return found;
         }
         else {        
             if (divided) {
-                vector<Circle*> se = (*SouthEast).query(range);
-                vector<Circle*> sw = (*SouthWest).query(range);
-                vector<Circle*> ne = (*NorthEast).query(range);
-                vector<Circle*> nw = (*NorthWest).query(range);
+                vector<Circle*> se = (*SouthEast).query(range, current);
+                vector<Circle*> sw = (*SouthWest).query(range, current);
+                vector<Circle*> ne = (*NorthEast).query(range, current);
+                vector<Circle*> nw = (*NorthWest).query(range, current);
 
-                found.insert(found.end(), se.begin(), se.end());
                 found.insert(found.end(), sw.begin(), sw.end());
                 found.insert(found.end(), ne.begin(), ne.end());
                 found.insert(found.end(), nw.begin(), nw.end());
             }
             else {
                 for (Circle* p : points) {
-                    if (range.contains(*p)) {
+                    if (&current != p &&range.contains(*p)) {
                         found.push_back(p);
                     }
                 }

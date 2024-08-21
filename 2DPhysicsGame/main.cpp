@@ -31,7 +31,7 @@ sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandB
 CircleManager cman(screenWidth, screenHeight, deltaTime, window);
 AABB boundary(Point(screenWidth / 2.0, screenHeight / 2.0), screenWidth / 2.0, screenHeight / 2.0);
 AABB testB(Point(screenWidth / 2.0, screenHeight / 2.0), screenWidth / 7.0, screenHeight / 3.0);
-
+AABB cBounds = testB;
 Rectangle rect(Point(700, 300), Point(-40, 23), 0, 1, sf::Color::White, 100, 300, 0 /*M_PI/4.01*/, floorRestitutionFactor, ShapeRestitutionFactor, .0f);
 Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Blue, 500, 100, 0.1, floorRestitutionFactor, ShapeRestitutionFactor, 0/*30*/);
 //Circle c1(0, 50, Point(300, 300), Point(-22, 33/*50, -6*/), floorRestitutionFactor, ShapeRestitutionFactor, 1);
@@ -115,13 +115,13 @@ int main()
 
         window.clear();
         QuadTree qt(boundary, cman.circles, 4, window);
-        //testB.drawBoundary(window);
-        //vector<Circle*> inBound = qt.query(testB);
-        //for (Circle* c : inBound) {
-        //    (*c).color = sf::Color::Blue;
-        //}
+        testB.drawBoundary(window);
+        vector<Circle*> inBound = qt.query(testB);
+        for (Circle* c : inBound) {
+            (*c).color = sf::Color::Blue;
+        }
         //cman.UpdateAll(dummy);
-        cman.UpdateAllQT(&qt);
+        cman.UpdateAllQT(&qt, cBounds);
         cman.DrawAll();
         sf::Time elapsed2 = clock.getElapsedTime();
         

@@ -1,7 +1,13 @@
-#pragma
-#include "Circle.h"
-#include "Point.h"
-#include <SFML/Graphics.hpp>
+//#ifndef QuadTree_H
+//#define QuadTree_H
+
+#pragma once
+//#include <SFML/Graphics.hpp>
+
+//#ifndef AABB_H
+//#define AABB_H
+
+
 // Axis-aligned bounding box stored as a center with half-dimensions
 // to represent the boundaries of this quad tree
 class AABB {
@@ -59,15 +65,18 @@ public:
     }
 };
 
+//#endif // !AABB_H
+
+
 class QuadTree {
 private:
     int nodeCapacity;
     vector<Circle>& cman;
     sf::RenderWindow& window;
     vector<Circle*> points;
+    AABB boundary;
 public:
     bool divided = false;
-    AABB boundary;
     std::unique_ptr<QuadTree> SouthEast;
     std::unique_ptr<QuadTree> SouthWest;
     std::unique_ptr<QuadTree> NorthEast;
@@ -155,3 +164,4 @@ public:
         }
     }
 };
+//#endif // !QuadTree_H

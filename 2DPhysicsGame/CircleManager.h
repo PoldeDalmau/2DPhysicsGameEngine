@@ -1,12 +1,16 @@
+//#ifndef CircleManager_H
+//#define CircleManager_H
+
 #pragma once
+#include "Circle.h"
 #include <vector>
 #include <cassert>
 
-#include "Quadtree.h"
-#include "Circle.h"
+//#include "Quadtree.h"
 // forward declarations
 //class Circle;
-//class QuadTree;
+class QuadTree;
+class AABB;
 
 // Use (void) to silence unused warnings.
 #define assertm(exp, msg) assert(((void)msg, exp))
@@ -233,28 +237,7 @@ public:
 
     }
 
-    void UpdateAllQT(QuadTree* qt) {
-        for (Circle& circle : circles) {
-            circle.updatePostionVerlet(deltaTime);
-        }
-
-        //for (Circle& circle : circles) {
-        //    AABB cBounds = AABB(circle.position, circle.radius, circle.radius);
-        //    vector<Circle*> found = (*qt).query(cBounds);
-        //    for (auto& c : found) {
-        //        if (circle.CheckCircleCircleCollision(*c))
-        //            circle.ResolveCircleCircleCollision(*c);
-        //    }
-        //}
-
-        //for (int i = 0; i < circles.size(); i++) {
-        //    vector<Circle*> found = qt.query(AABB(circles[i].position, circles[i].radius, circles[i].radius));
-        //    for (auto& c : found) {
-        //        if (circles[i].CheckCircleCircleCollision(*c))
-        //            circles[i].ResolveCircleCircleCollision(*c);
-        //    }
-        //}
-    }
+    void UpdateAllQT(QuadTree* qt, AABB& cBounds);
 
     void CheckCollisionsAndResolve(bool& canJump) {
         bool contact = true;
@@ -319,3 +302,4 @@ public:
 
     }
 };
+//#endif // CircleManager_H

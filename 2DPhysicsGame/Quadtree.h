@@ -1,66 +1,63 @@
-#pragma 
+#pragma
+#include "Circle.h"
 #include "Point.h"
-#include "CircleManager.h"
 #include <SFML/Graphics.hpp>
-
-
 // Axis-aligned bounding box stored as a center with half-dimensions
-  // to represent the boundaries of this quad tree
+// to represent the boundaries of this quad tree
 class AABB {
-    public:
-        Point center;
-        float width;
-        float height;
-        
-        AABB(Point center,
-            float width,
-            float height
-        )
-            :
-            center(center),
-            width(width),
-            height(height)
-        {}
+public:
+    Point center;
+    float width;
+    float height;
 
-        void drawLine(Point start, Point end, sf::RenderWindow& window)
-        {// draw vertices
-            sf::VertexArray line(sf::Lines, 4);
-            line[0].color = sf::Color::White;
-            line[0].position = sf::Vector2f(start.x, start.y);
-            line[1].color = sf::Color::White;
-            line[1].position = sf::Vector2f(end.x, end.y);
-            window.draw(line);
-        }
+    AABB(Point center,
+        float width,
+        float height
+    )
+        :
+        center(center),
+        width(width),
+        height(height)
+    {}
 
-        void drawBoundary(sf::RenderWindow& window) {
-            Point sw = center + Point(-width, height);
-            Point se = center + Point(width, height);
-            Point nw = center + Point(-width, -height);
-            Point ne = center + Point(width, -height);
+    void drawLine(Point start, Point end, sf::RenderWindow& window)
+    {// draw vertices
+        sf::VertexArray line(sf::Lines, 4);
+        line[0].color = sf::Color::White;
+        line[0].position = sf::Vector2f(start.x, start.y);
+        line[1].color = sf::Color::White;
+        line[1].position = sf::Vector2f(end.x, end.y);
+        window.draw(line);
+    }
 
-            drawLine(sw, se, window);
-            drawLine(se, ne, window);
-            drawLine(ne, nw, window);
-            drawLine(nw, sw, window);
-        }
+    void drawBoundary(sf::RenderWindow& window) {
+        Point sw = center + Point(-width, height);
+        Point se = center + Point(width, height);
+        Point nw = center + Point(-width, -height);
+        Point ne = center + Point(width, -height);
 
-        bool contains(Circle circle) {
-            return (circle.position.x > center.x - width &&
-                circle.position.x < center.x + width &&
-                circle.position.y < center.y + height &&
-                circle.position.y > center.y - height);
-        }
+        drawLine(sw, se, window);
+        drawLine(se, ne, window);
+        drawLine(ne, nw, window);
+        drawLine(nw, sw, window);
+    }
 
-        bool intersects(AABB range) {
-            return (
-                range.center.x - range.width > center.x + width ||
-                range.center.x + range.width > center.x - width ||
-                range.center.y - range.height > center.y + height ||
-                range.center.y + range.height > center.y - height
-                );
-        }
+    bool contains(Circle circle) {
+        return (circle.position.x > center.x - width &&
+            circle.position.x < center.x + width &&
+            circle.position.y < center.y + height &&
+            circle.position.y > center.y - height);
+    }
+
+    bool intersects(AABB range) {
+        return (
+            range.center.x - range.width > center.x + width ||
+            range.center.x + range.width > center.x - width ||
+            range.center.y - range.height > center.y + height ||
+            range.center.y + range.height > center.y - height
+            );
+    }
 };
-
 
 class QuadTree {
 private:
@@ -149,7 +146,6 @@ public:
             else {
                 for (Circle* p : points) {
                     if (range.contains(*p)) {
-                        (*p).color = (sf::Color::Blue);
                         found.push_back(p);
                     }
                 }

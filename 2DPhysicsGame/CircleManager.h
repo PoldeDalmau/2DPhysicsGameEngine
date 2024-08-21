@@ -1,8 +1,12 @@
 #pragma once
-#include "Circle.h"
 #include <vector>
 #include <cassert>
 
+#include "Quadtree.h"
+#include "Circle.h"
+// forward declarations
+//class Circle;
+//class QuadTree;
 
 // Use (void) to silence unused warnings.
 #define assertm(exp, msg) assert(((void)msg, exp))
@@ -55,24 +59,24 @@ public:
 
     void handleSpringSystem(int numCirclesRow, int numCirclesColumn, float latticeConstant) {
         //this is awful. I should change it!
-        for (int i = 1; i < numCirclesRow - 1; i++)
-            for (int j = 1; j < numCirclesColumn - 1; j++) {
-                //if (i > 1 && i < numCirclesRow - 1) {
+        //for (int i = 1; i < numCirclesRow - 1; i++)
+        //    for (int j = 1; j < numCirclesColumn - 1; j++) {
+        //        if (i > 1 && i < numCirclesRow - 1) {
 
 
-                //SpringLink(i + j, (i - 1) * numCirclesRow + j, latticeConstant); // left neighbor
-                //drawLine(window, i + j, (i - 1) * numCirclesRow + j);
+        //        SpringLink(i + j, (i - 1) * numCirclesRow + j, latticeConstant); // left neighbor
+        //        drawLine(window, i + j, (i - 1) * numCirclesRow + j);
 
-                //SpringLink(i + j, i + (j - numCirclesRow), latticeConstant); // above neighbor
-                //SpringLink(i + j, (i - 1) + (j - numCirclesRow), latticeConstant); // above left neightbor
-                //SpringLink(i + j, (i + numCirclesRow) + j, latticeConstant); // right neighbor
-                
-                //}
-                //if (j > 1 && j < numCirclesColumn - 1) {
-                //    SpringLink(i + j, i + (j - numCirclesColumn), latticeConstant);
-                //    SpringLink(i + j, i + (j + numCirclesColumn), latticeConstant);
-                //}
-            }
+        //        SpringLink(i + j, i + (j - numCirclesRow), latticeConstant); // above neighbor
+        //        SpringLink(i + j, (i - 1) + (j - numCirclesRow), latticeConstant); // above left neightbor
+        //        SpringLink(i + j, (i + numCirclesRow) + j, latticeConstant); // right neighbor
+        //        
+        //        }
+        //        if (j > 1 && j < numCirclesColumn - 1) {
+        //            SpringLink(i + j, i + (j - numCirclesColumn), latticeConstant);
+        //            SpringLink(i + j, i + (j + numCirclesColumn), latticeConstant);
+        //        }
+        //    }
     
         //0 3 6 9
         //1 4 7 10
@@ -223,8 +227,35 @@ public:
             circle.updatePostionVerlet(deltaTime);
             //circle.circleFriction(screenHeight);
         }
+
+        // basic collisionhandler
         CheckCollisionsAndResolve(canJump);
+
     }
+
+    void UpdateAllQT(QuadTree* qt) {
+        for (Circle& circle : circles) {
+            circle.updatePostionVerlet(deltaTime);
+        }
+
+        //for (Circle& circle : circles) {
+        //    AABB cBounds = AABB(circle.position, circle.radius, circle.radius);
+        //    vector<Circle*> found = (*qt).query(cBounds);
+        //    for (auto& c : found) {
+        //        if (circle.CheckCircleCircleCollision(*c))
+        //            circle.ResolveCircleCircleCollision(*c);
+        //    }
+        //}
+
+        //for (int i = 0; i < circles.size(); i++) {
+        //    vector<Circle*> found = qt.query(AABB(circles[i].position, circles[i].radius, circles[i].radius));
+        //    for (auto& c : found) {
+        //        if (circles[i].CheckCircleCircleCollision(*c))
+        //            circles[i].ResolveCircleCircleCollision(*c);
+        //    }
+        //}
+    }
+
     void CheckCollisionsAndResolve(bool& canJump) {
         bool contact = true;
         for (int i = 0; i < circles.size(); i++) {

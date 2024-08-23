@@ -68,11 +68,18 @@ int main()
     //float massMSS = 20;
     //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
     cman.AddCirclesMesh(5, 300, 25);
+
     //cman.AddCircle(Circle(0, 25, Point(500, 200), Point(50, .1), 1, 1, 5));
     //cman.AddCircle(Circle(0, 65, Point(400, 200), Point(5, 0), 1, 1, 15));
     //cman.AddCircle(Circle(0, 25, Point(300, 200), Point(5, 0), 1, 1, 5));
     //cman.AddCircle(Circle(0, 90, Point(200, 200), Point(5, 0), 1, 1, 25));
     //cman.AddCircle(Circle(0, 45, Point(100, 200), Point(5, 0), 1, 1, 10));
+
+    //cman.AddCircle(Circle(0, 25, Point(500, 200), Point(0, 0), 1, 1, 5));
+    //cman.AddCircle(Circle(1, 65, Point(400, 200), Point(0, 0), 1, 1, 15));
+    //cman.AddCircle(Circle(2, 25, Point(300, 200), Point(0, 0), 1, 1, 5));
+    //cman.AddCircle(Circle(3, 90, Point(200, 200), Point(0, 0), 1, 1, 25));
+    //cman.AddCircle(Circle(4, 45, Point(100, 200), Point(0, 0), 1, 1, 10));
 
     bool dummy = false;
     float jumpDist = 5;
@@ -85,36 +92,32 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            //else if (event.type == sf::Event::KeyPressed) {
-            //    //spin wheel
-            //    if (event.key.code == sf::Keyboard::D) {
-            //        rect.position.x += (jumpDist);
-            //        //car.turnWheel(-1);
-            //    }
-            //    if (event.key.code == sf::Keyboard::A) {
-            //        rect.position.x += (-jumpDist);
-            //        //car.turnWheel(1);
-            //    }
+            else if (event.type == sf::Event::KeyPressed) {
+                //spin wheel
+                /*if (event.key.code == sf::keyboard::d) {
+                    rect.position.x += (jumpdist);
+                    car.turnwheel(-1);
+                }
+                if (event.key.code == sf::keyboard::a) {
+                    rect.position.x += (-jumpdist);
+                    car.turnwheel(1);
+                }*/
             //    if (event.key.code == sf::Keyboard::S)
-            //        rect.position.y += (jumpDist);
+            //        cman.circles[0].position.y += (jumpDist);
             //    if (event.key.code == sf::Keyboard::W)
-            //        rect.position.y += (-jumpDist);
-            //    if (event.key.code == sf::Keyboard::Q)
-            //        rect.angle += (-jumpDist * M_PI / 180);
-            //    if (event.key.code == sf::Keyboard::E)
-            //        rect.angle += (jumpDist * M_PI / 180);
-            //    //if (event.key.code == sf::Keyboard::Space)
-            //    //    car.jump();
-            //    //if (event.key.code == sf::Keyboard::V)
-            //    //    car.drawSprings();
+            //        cman.circles[0].position.y -= (jumpDist);
+            //    if (event.key.code == sf::Keyboard::D)
+            //        cman.circles[0].position.x += (jumpDist);
+            //    if (event.key.code == sf::Keyboard::A)
+            //        cman.circles[0].position.x -= (jumpDist);
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                     window.close();
-            //}
+            }
         }
 
         window.clear();
-        QuadTree qt(boundary, cman.circles, 35, window);
+        QuadTree qt(boundary, cman.circles, 10, window);
         //testB.drawBoundary(window);
         //vector<Circle*> inBound = qt.query(testB);
         //for (Circle* c : inBound) {

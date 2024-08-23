@@ -1,12 +1,5 @@
-//#ifndef QuadTree_H
-//#define QuadTree_H
-
 #pragma once
 //#include <SFML/Graphics.hpp>
-
-//#ifndef AABB_H
-//#define AABB_H
-
 
 // Axis-aligned bounding box stored as a center with half-dimensions
 // to represent the boundaries of this quad tree
@@ -49,7 +42,12 @@ public:
     }
 
     bool contains(Circle circle) {
-        return (circle.position.x + circle.radius > center.x - width &&
+        return (
+            //circle.position.x > center.x - width &&
+            //circle.position.x < center.x + width &&
+            //circle.position.y < center.y + height &&
+            //circle.position.y > center.y - height);
+        circle.position.x + circle.radius > center.x - width &&
             circle.position.x - circle.radius < center.x + width &&
             circle.position.y - circle.radius < center.y + height &&
             circle.position.y + circle.radius > center.y - height);
@@ -64,8 +62,6 @@ public:
             );
     }
 };
-
-//#endif // !AABB_H
 
 
 class QuadTree {
@@ -148,6 +144,7 @@ public:
                 vector<Circle*> nw = (*NorthWest).query(range, current);
 
                 found.insert(found.end(), sw.begin(), sw.end());
+                found.insert(found.end(), se.begin(), se.end());
                 found.insert(found.end(), ne.begin(), ne.end());
                 found.insert(found.end(), nw.begin(), nw.end());
             }
@@ -163,4 +160,3 @@ public:
         }
     }
 };
-//#endif // !QuadTree_H

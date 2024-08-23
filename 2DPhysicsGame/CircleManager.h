@@ -157,12 +157,12 @@ public:
 
         int numberOfCirclesPerRow = int(screenWidth/latticeConstant);
 
-        for (int numy = 0; numy < 9; numy++)
+        for (int numy = 0; numy < 22; numy++)
         for (int numx = 0; numx < numberOfCirclesPerRow; numx++) {
             //if (numberOfCircles == numx)
             //    break;
             float x = latticeConstant/2 + (numx * latticeConstant);
-            float y = latticeConstant/2 + 3 * (numy * latticeConstant);
+            float y = latticeConstant/2 + 1.2 * (numy * latticeConstant);
             float vx = 0;
             float vy = 0;
             //float vx = -100 + 5*numx;

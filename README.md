@@ -6,7 +6,7 @@ Two circles and a rectangle with a restitution factor of 0.9 for collisions with
 ![circle polygon collision](https://github.com/PoldeDalmau/2DPhysicsGame/assets/73791685/4fe3fce7-b248-461e-9d51-27287a4165b9)
 
 
-500 white circles are initialized at rest. An extra red circle is initialized with a velocity. Quickly, we see that through collisions, the system begins to behave like an ideal gas. See the velocity (unitless) histogram at the bottom right.
+500 white circles are initialized at rest. An extra red circle is initialized with a velocity. Quickly, we see that through collisions, the system begins to behave like an ideal gas. This is validated by the velocity (unitless) histogram at the bottom right converging to the Maxwell-Boltzmann distribution.
 
 ![ideal gas](https://github.com/PoldeDalmau/2DPhysicsGame/assets/73791685/20f82932-d901-44fb-bae7-c6cbd27b8f73)
 
@@ -22,7 +22,7 @@ Once you have cloned the project locally, proceed to build it (see below) in Rel
 
 ![Screenshot 2024-08-16 145542](https://github.com/user-attachments/assets/aed1f984-debe-4f11-8895-c2b39d916f1b)
 
-Make sure to select the x86 config (see screenshot below). Building will generate the Realease (and Debug) folders in your project directory. 
+Make sure to select the x86 config (see screenshot below). Building will generate the Release (and Debug) folders in your project directory. 
 
 ![Screenshot 2024-08-16 141446](https://github.com/user-attachments/assets/faaa59d2-e6e5-4488-8d01-0e29e7a6b12b)
 

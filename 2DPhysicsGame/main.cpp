@@ -30,7 +30,7 @@ sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight), "Physics SandB
 //Car car(screenWidth, screenHeight, deltaTime, window, 1, 40);
 CircleManager cman(screenWidth, screenHeight, deltaTime, window);
 AABB boundary(Point(screenWidth / 2.0, screenHeight / 2.0), screenWidth / 2.0, screenHeight / 2.0);
-AABB testB(Point(screenWidth / 2.0, screenHeight / 2.0), screenWidth / 7.0, screenHeight / 3.0);
+AABB testB(Point(300, screenHeight / 2.0), screenWidth / 15.0, screenHeight / 10.0);
 AABB cBounds = testB;
 Rectangle rect(Point(700, 300), Point(-40, 23), 0, 1, sf::Color::White, 100, 300, 0 /*M_PI/4.01*/, floorRestitutionFactor, ShapeRestitutionFactor, .0f);
 Rectangle rect2(Point(200, 300), Point(0, 0), 1, 1, sf::Color::Blue, 500, 100, 0.1, floorRestitutionFactor, ShapeRestitutionFactor, 0/*30*/);
@@ -66,7 +66,7 @@ int main()
     //float latticeConstantMSS = 50;
     //float radiusMSS = 20;
     //float massMSS = 20;
-    //cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
+    ////cman.initializeMassSpringSystem(numColsMSS, numRowsMSS, latticeConstantMSS, radiusMSS, massMSS);
     cman.AddCirclesMesh(5, 300, 25);
 
     //cman.AddCircle(Circle(0, 25, Point(500, 200), Point(50, .1), 1, 1, 5));
@@ -79,7 +79,7 @@ int main()
     //cman.AddCircle(Circle(1, 65, Point(400, 200), Point(0, 0), 1, 1, 15));
     //cman.AddCircle(Circle(2, 25, Point(300, 200), Point(0, 0), 1, 1, 5));
     //cman.AddCircle(Circle(3, 90, Point(200, 200), Point(0, 0), 1, 1, 25));
-    //cman.AddCircle(Circle(4, 45, Point(100, 200), Point(0, 0), 1, 1, 10));
+    //cman.AddCircle(Circle(4, 45, Point(1000, 200), Point(0, 0), 1, 1, 10));
 
     bool dummy = false;
     float jumpDist = 5;
@@ -102,24 +102,23 @@ int main()
                     rect.position.x += (-jumpdist);
                     car.turnwheel(1);
                 }*/
-            //    if (event.key.code == sf::Keyboard::S)
-            //        cman.circles[0].position.y += (jumpDist);
-            //    if (event.key.code == sf::Keyboard::W)
-            //        cman.circles[0].position.y -= (jumpDist);
-            //    if (event.key.code == sf::Keyboard::D)
-            //        cman.circles[0].position.x += (jumpDist);
-            //    if (event.key.code == sf::Keyboard::A)
-            //        cman.circles[0].position.x -= (jumpDist);
+                if (event.key.code == sf::Keyboard::S)
+                    cman.circles[0].position.y += (jumpDist);
+                if (event.key.code == sf::Keyboard::W)
+                    cman.circles[0].position.y -= (jumpDist);
+                if (event.key.code == sf::Keyboard::D)
+                    cman.circles[0].position.x += (jumpDist);
+                if (event.key.code == sf::Keyboard::A)
+                    cman.circles[0].position.x -= (jumpDist);
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                     window.close();
             }
         }
-
-        window.clear();
-        QuadTree qt(boundary, cman.circles, 10, window);
+        window.clear(); 
+        QuadTree qt(boundary, cman.circles, 100, window);
         //testB.drawBoundary(window);
-        //vector<Circle*> inBound = qt.query(testB);
+        //vector<Circle*> inBound = qt.query(testB, cman.circles[0], window);
         //for (Circle* c : inBound) {
         //    (*c).color = sf::Color::Blue;
         //}

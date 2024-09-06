@@ -9,9 +9,9 @@ void CircleManager::UpdateAllQT(QuadTree* qt) {
     for (Circle& circle : circles) {
         circle.updatePostionVerlet(deltaTime);
         circle.ResolveWallCollision(screenWidth, screenHeight);
-        AABB cBounds(circle.position, circle.radius, circle.radius);
-        //cBounds.drawBoundary(window);
-        vector<Circle*> found = (*qt).query(cBounds, circle);
+        AABB cBounds(circle.position, circle.radius * 2, 2 * circle.radius);
+        cBounds.drawBoundary(window);
+        vector<Circle*> found = (*qt).query(cBounds, circle, window);
         for (auto& c : found) {
             if (circle.CheckCircleCircleCollision(*c)){
                 //circle.color = sf::Color::Red;
@@ -20,13 +20,4 @@ void CircleManager::UpdateAllQT(QuadTree* qt) {
             }
         }
     }
-
-    //for (int i = 0; i < circles.size(); i++) {
-    //    vector<Circle*> found = qt.query(AABB(circles[i].position, circles[i].radius, circles[i].radius));
-    //    circles[i].ResolveWallCollision(screenWidth, screenHeight/*, screenWidth, contact*/);
-    //    for (auto& c : found) {
-    //        if (circles[i].CheckCircleCircleCollision(*c))
-    //            circles[i].ResolveCircleCircleCollision(*c);
-    //    }
-    //}
 }

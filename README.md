@@ -1,5 +1,5 @@
 # 2DPhysicsGame
-A start to make a game that uses solid balls and polygons, and the physics that governs them. 
+A start to make a physics engine that uses solid balls and polygons, and the physics that governs them. For visualizations I am using [SFML](https://www.sfml-dev.org/).
 
 Two circles and a rectangle with a restitution factor of 0.9 for collisions with the floor and with each other. 
 
@@ -40,6 +40,7 @@ Once those folders are generated, copy the .dll files from the sfml_config.zip i
 - [ ] Refactoring: collision handling class with template for different shapes instead of member functions handling collision for different shapes.
 - [ ] Quadtree class that can be constructed with Circle manager.
   - [x] store circles in quadtree with visualization of borders
-  - [ ] write query function
+  - [x] write query function
+  - [ ] write update function and restructure tree so it doesn't get destroyed and created every frame.
   - [ ] make templates
 

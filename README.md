@@ -8,9 +8,11 @@ Two circles and a rectangle with a restitution factor of 0.9 for collisions with
 
 500 white circles are initialized at rest. An extra red circle is initialized with a velocity. Quickly, we see that through collisions, the system begins to behave like an ideal gas. This is validated by the velocity (unitless) histogram at the bottom right converging to the Maxwell-Boltzmann distribution.
 
-![ideal gas](https://github.com/PoldeDalmau/2DPhysicsGame/assets/73791685/20f82932-d901-44fb-bae7-c6cbd27b8f73)
+![Ideal Gas](https://github.com/user-attachments/assets/b213050e-662b-4d53-9d78-1b572c246369)
 
+In addition, the same is being developed but the particles can be stored in a quadtree. For now, the brute method still outperforms the quadtree. 
 
+![Ideal Gas QT](https://github.com/user-attachments/assets/81581cc2-ef59-4b21-aefe-52c6d62a3444)
 
 The engine now can include a squishy car that can be controlled with the keys <kbd>A</kbd> and <kbd>D</kbd> to move, <kbd>Space</kbd> to jump, and <kbd>V</kbd> to view all the spring forces acting.
 
